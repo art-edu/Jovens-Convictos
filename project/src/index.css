@@ -1,0 +1,62 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    @apply scroll-smooth;
+  }
+
+  body {
+    @apply bg-black text-white font-sans antialiased;
+    font-weight: 300;
+  }
+
+  * {
+    @apply box-border;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #000;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 2px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #fbbf24;
+  }
+
+  /* Remove number input arrows */
+  input[type='number']::-webkit-outer-spin-button,
+  input[type='number']::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-amber-400 text-black text-xs tracking-widest uppercase px-8 py-4 hover:bg-amber-300 transition-colors duration-300;
+  }
+
+  .btn-outline {
+    @apply border border-neutral-700 text-neutral-300 text-xs tracking-widest uppercase px-8 py-4 hover:border-white hover:text-white transition-all duration-300;
+  }
+
+  .input-field {
+    @apply w-full bg-neutral-900 border border-neutral-700 text-white text-sm px-4 py-4 focus:outline-none focus:border-amber-400 transition-colors placeholder-neutral-600;
+  }
+
+  .label {
+    @apply text-neutral-400 text-xs tracking-widest uppercase block mb-2;
+  }
+}
