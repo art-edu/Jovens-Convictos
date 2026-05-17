@@ -37,6 +37,10 @@ export default function ProductDetail() {
 
   function handleAddToCart() {
     if (!product) return;
+    if (product.stock === 0) {
+      toast('Produto esgotado', 'error');
+      return;
+    }
     if (product.category === 'camisas' || product.category === 'moletons') {
       if (!selectedSize) {
         toast('Selecione um tamanho', 'error');
@@ -71,6 +75,7 @@ export default function ProductDetail() {
 
   const images = product.images?.length ? product.images : [''];
   const needsSize = product.category === 'camisas' || product.category === 'moletons';
+  const isOutOfStock = product.stock === 0;
 
   return (
     <div className="bg-black min-h-screen pt-16">
@@ -180,18 +185,31 @@ export default function ProductDetail() {
               </div>
             )}
 
-            <button
-              onClick={handleAddToCart}
-              className="w-full bg-amber-400 text-black text-xs tracking-[0.25em] uppercase py-5 flex items-center justify-center gap-3 hover:bg-amber-300 transition-colors duration-300 mb-4"
-            >
-              <ShoppingBag size={16} />
-              Adicionar ao Carrinho
-            </button>
+            {isOutOfStock ? (
+              <div className="w-full bg-neutral-800 text-neutral-400 text-xs tracking-[0.25em] uppercase py-5 flex items-center justify-center mb-4">
+                Esgotado
+              </div>
+            ) : (
+              <button
+                onClick={handleAddToCart}
+                className="w-full bg-amber-400 text-black text-xs tracking-[0.25em] uppercase py-5 flex items-center justify-center gap-3 hover:bg-amber-300 transition-colors duration-300 mb-4"
+              >
+                <ShoppingBag size={16} />
+                Adicionar ao Carrinho
+              </button>
+            )}
 
             <div className="border-t border-neutral-900 pt-6 space-y-3">
               <p className="text-neutral-600 text-xs tracking-wide">Frete grátis acima de R$ 200</p>
               <p className="text-neutral-600 text-xs tracking-wide">Pagamento via PIX ou cartão</p>
               <p className="text-neutral-600 text-xs tracking-wide">Entrega em 5-8 dias úteis</p>
+              {!isOutOfStock && (
+                <p className="text-neutral-600 text-xs tracking-wide">
+                  {product.stock <= 5
+                    ? `Últimas ${product.stock} unidades em estoque`
+                    : 'Em estoque'}
+                </p>
+              )}
             </div>
           </motion.div>
         </div>

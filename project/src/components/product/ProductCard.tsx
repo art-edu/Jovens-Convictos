@@ -16,8 +16,14 @@ export default function ProductCard({ product, index = 0 }: Props) {
   const { addItem, openCart } = useCart();
   const { toast } = useToast();
 
+  const isOutOfStock = product.stock === 0;
+
   function handleQuickAdd(e: React.MouseEvent) {
     e.preventDefault();
+    if (isOutOfStock) {
+      toast('Produto esgotado', 'error');
+      return;
+    }
     addItem(product, '', '');
     toast(`${product.name} adicionado ao carrinho`);
     openCart();
@@ -48,16 +54,22 @@ export default function ProductCard({ product, index = 0 }: Props) {
           />
           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-500" />
 
-          <motion.button
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: hovered ? 1 : 0, y: hovered ? 0 : 10 }}
-            transition={{ duration: 0.25 }}
-            onClick={handleQuickAdd}
-            className="absolute bottom-4 left-4 right-4 bg-white text-black text-xs tracking-[0.15em] uppercase py-3 flex items-center justify-center gap-2 hover:bg-amber-400 transition-colors duration-300"
-          >
-            <ShoppingBag size={14} />
-            Adicionar
-          </motion.button>
+          {isOutOfStock ? (
+            <div className="absolute bottom-4 left-4 right-4 bg-black/80 text-neutral-400 text-xs tracking-[0.15em] uppercase py-3 flex items-center justify-center">
+              Esgotado
+            </div>
+          ) : (
+            <motion.button
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: hovered ? 1 : 0, y: hovered ? 0 : 10 }}
+              transition={{ duration: 0.25 }}
+              onClick={handleQuickAdd}
+              className="absolute bottom-4 left-4 right-4 bg-white text-black text-xs tracking-[0.15em] uppercase py-3 flex items-center justify-center gap-2 hover:bg-amber-400 transition-colors duration-300"
+            >
+              <ShoppingBag size={14} />
+              Adicionar
+            </motion.button>
+          )}
         </div>
 
         <div className="pt-4 pb-6">
