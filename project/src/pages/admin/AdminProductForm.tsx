@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { X, Plus, Image } from 'lucide-react';
-import { supabase } from '../../lib/supabase';
+import { X, Plus, Image, Upload, Loader2 } from 'lucide-react';
+import { supabase, uploadProductImage, deleteProductImage } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../../contexts/ToastContext';
 import type { Product } from '../../types/database';
@@ -21,8 +21,9 @@ export default function AdminProductForm() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [form, setForm] = useState<Partial<Product>>(empty);
-  const [newImage, setNewImage] = useState('');
+  const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!authLoading && !isAdmin) navigate('/');
@@ -54,20 +55,69 @@ export default function AdminProductForm() {
     setForm(prev => ({ ...prev, name, slug: prev.slug || autoSlug(name) }));
   }
 
-  function addImage() {
-    if (!newImage.trim()) return;
-    setForm(prev => ({ ...prev, images: [...(prev.images ?? []), newImage.trim()] }));
-    setNewImage('');
+  async function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    setUploading(true);
+    const newUrls: string[] = [];
+
+    for (const file of files) {
+      if (!file.type.startsWith('image/')) {
+        toast('Apenas imagens são permitidas', 'error');
+        continue;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        toast('Imagem deve ter no máximo 5MB', 'error');
+        continue;
+      }
+      try {
+        const url = await uploadProductImage(file);
+        newUrls.push(url);
+      } catch {
+        toast(`Erro ao enviar ${file.name}`, 'error');
+      }
+    }
+
+    if (newUrls.length > 0) {
+      setForm(prev => ({ ...prev, images: [...(prev.images ?? []), ...newUrls] }));
+      toast(`${newUrls.length} imagem(ns) enviada(s)`);
+    }
+
+    setUploading(false);
+    if (fileInputRef.current) fileInputRef.current.value = '';
   }
 
-  function removeImage(idx: number) {
+  async function removeImage(idx: number) {
+    const images = form.images ?? [];
+    const removed = images[idx];
     setForm(prev => ({ ...prev, images: prev.images?.filter((_, i) => i !== idx) }));
+
+    if (removed && !removed.includes('pexels.com') && !removed.includes('catbox.moe')) {
+      try {
+        await deleteProductImage(removed);
+      } catch {
+        // ignore deletion errors
+      }
+    }
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!form.name || !form.slug || !form.price) {
       toast('Preencha todos os campos obrigatórios', 'error');
+      return;
+    }
+    if (form.name.length > 200) {
+      toast('Nome do produto deve ter no máximo 200 caracteres', 'error');
+      return;
+    }
+    if (form.price <= 0) {
+      toast('Preço deve ser maior que zero', 'error');
+      return;
+    }
+    if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(form.slug)) {
+      toast('Slug inválido. Use apenas letras minúsculas, números e hífens', 'error');
       return;
     }
     setLoading(true);
@@ -77,7 +127,7 @@ export default function AdminProductForm() {
       else { toast('Produto atualizado com sucesso'); navigate('/admin/produtos'); }
     } else {
       const { error } = await supabase.from('products').insert(form);
-      if (error) { toast(error.message || 'Erro ao criar produto', 'error'); }
+      if (error) { toast('Erro ao criar produto', 'error'); }
       else { toast('Produto criado com sucesso'); navigate('/admin/produtos'); }
     }
     setLoading(false);
@@ -102,7 +152,7 @@ export default function AdminProductForm() {
                 <h3 className="text-white text-xs tracking-[0.2em] uppercase pb-4 border-b border-neutral-800">Informações</h3>
                 <div>
                   <label className="text-neutral-400 text-xs tracking-[0.15em] uppercase block mb-2">Nome *</label>
-                  <input name="name" value={form.name ?? ''} onChange={handleNameChange} className="w-full bg-neutral-900 border border-neutral-700 text-white text-sm px-4 py-3.5 focus:outline-none focus:border-amber-400 transition-colors" required />
+                  <input name="name" value={form.name ?? ''} onChange={handleNameChange} maxLength={200} className="w-full bg-neutral-900 border border-neutral-700 text-white text-sm px-4 py-3.5 focus:outline-none focus:border-amber-400 transition-colors" required />
                 </div>
                 <div>
                   <label className="text-neutral-400 text-xs tracking-[0.15em] uppercase block mb-2">Slug *</label>
@@ -115,7 +165,7 @@ export default function AdminProductForm() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="text-neutral-400 text-xs tracking-[0.15em] uppercase block mb-2">Preço (R$) *</label>
-                    <input name="price" type="number" step="0.01" min="0" value={form.price ?? 0} onChange={handleChange} className="w-full bg-neutral-900 border border-neutral-700 text-white text-sm px-4 py-3.5 focus:outline-none focus:border-amber-400 transition-colors" required />
+                    <input name="price" type="number" step="0.01" min="0.01" value={form.price ?? 0} onChange={handleChange} className="w-full bg-neutral-900 border border-neutral-700 text-white text-sm px-4 py-3.5 focus:outline-none focus:border-amber-400 transition-colors" required />
                   </div>
                   <div>
                     <label className="text-neutral-400 text-xs tracking-[0.15em] uppercase block mb-2">Estoque</label>
@@ -146,23 +196,31 @@ export default function AdminProductForm() {
                       </button>
                     </div>
                   ))}
-                  <div className="aspect-square bg-neutral-900 border-2 border-dashed border-neutral-700 flex items-center justify-center">
-                    <Image size={20} className="text-neutral-600" />
-                  </div>
-                </div>
-                <div className="flex gap-2">
-                  <input
-                    type="url"
-                    value={newImage}
-                    onChange={e => setNewImage(e.target.value)}
-                    onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addImage())}
-                    placeholder="Cole a URL da imagem (Pexels, etc.)"
-                    className="flex-1 bg-neutral-900 border border-neutral-700 text-white text-sm px-4 py-3 focus:outline-none focus:border-amber-400 transition-colors placeholder-neutral-600"
-                  />
-                  <button type="button" onClick={addImage} className="bg-amber-400 text-black px-4 hover:bg-amber-300 transition-colors">
-                    <Plus size={16} />
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploading}
+                    className="aspect-square bg-neutral-900 border-2 border-dashed border-neutral-700 flex flex-col items-center justify-center gap-2 hover:border-amber-400 transition-colors disabled:opacity-50"
+                  >
+                    {uploading ? (
+                      <Loader2 size={20} className="text-amber-400 animate-spin" />
+                    ) : (
+                      <>
+                        <Upload size={20} className="text-neutral-600" />
+                        <span className="text-neutral-600 text-xs">Enviar</span>
+                      </>
+                    )}
                   </button>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={handleFileUpload}
+                    className="hidden"
+                  />
                 </div>
+                <p className="text-neutral-600 text-xs">Formatos: JPG, PNG, WebP — Máximo 5MB por imagem</p>
               </div>
             </div>
 
@@ -187,10 +245,10 @@ export default function AdminProductForm() {
 
               <button
                 type="submit"
-                disabled={loading}
+                disabled={loading || uploading}
                 className="w-full bg-amber-400 text-black text-xs tracking-[0.25em] uppercase py-5 hover:bg-amber-300 transition-colors disabled:opacity-50"
               >
-                {loading ? 'Salvando...' : isEdit ? 'Atualizar Produto' : 'Criar Produto'}
+                {loading ? 'Salvando...' : uploading ? 'Enviando imagens...' : isEdit ? 'Atualizar Produto' : 'Criar Produto'}
               </button>
               <Link to="/admin/produtos" className="block w-full text-center text-neutral-500 text-xs tracking-widest uppercase py-3 hover:text-white transition-colors">
                 Cancelar
