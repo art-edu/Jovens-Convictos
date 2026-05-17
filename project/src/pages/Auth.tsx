@@ -4,6 +4,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 
+const GENERIC_ERROR = 'Ocorreu um erro. Tente novamente mais tarde.';
+
 export default function Auth() {
   const [mode, setMode] = useState<'login' | 'register'>('login');
   const [email, setEmail] = useState('');
@@ -14,12 +16,41 @@ export default function Auth() {
   const { toast } = useToast();
   const navigate = useNavigate();
 
+  function sanitizeInput(value: string): string {
+    return value.trim().replace(/[<>]/g, '');
+  }
+
+  function validateEmail(value: string): boolean {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+  }
+
+  function validatePassword(value: string): string | null {
+    if (value.length < 6) return 'A senha deve ter no mínimo 6 caracteres';
+    if (value.length > 128) return 'A senha deve ter no máximo 128 caracteres';
+    return null;
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+
+    const sanitizedEmail = sanitizeInput(email).toLowerCase();
+    const sanitizedFullName = sanitizeInput(fullName);
+
+    if (!validateEmail(sanitizedEmail)) {
+      toast('E-mail inválido', 'error');
+      return;
+    }
+
+    const passwordError = validatePassword(password);
+    if (passwordError) {
+      toast(passwordError, 'error');
+      return;
+    }
+
     setLoading(true);
 
     if (mode === 'login') {
-      const { error } = await signIn(email, password);
+      const { error } = await signIn(sanitizedEmail, password);
       if (error) {
         toast('E-mail ou senha inválidos', 'error');
       } else {
@@ -27,14 +58,19 @@ export default function Auth() {
         navigate('/');
       }
     } else {
-      if (!fullName.trim()) {
+      if (!sanitizedFullName) {
         toast('Informe seu nome completo', 'error');
         setLoading(false);
         return;
       }
-      const { error } = await signUp(email, password, fullName);
+      if (sanitizedFullName.length > 100) {
+        toast('Nome muito longo', 'error');
+        setLoading(false);
+        return;
+      }
+      const { error } = await signUp(sanitizedEmail, password, sanitizedFullName);
       if (error) {
-        toast(error.message || 'Erro ao criar conta', 'error');
+        toast(GENERIC_ERROR, 'error');
       } else {
         toast('Conta criada! Faça login para continuar.');
         setMode('login');
@@ -103,6 +139,7 @@ export default function Auth() {
                     type="text"
                     value={fullName}
                     onChange={e => setFullName(e.target.value)}
+                    maxLength={100}
                     className="w-full bg-neutral-900 border border-neutral-700 text-white text-sm px-4 py-4 focus:outline-none focus:border-amber-400 transition-colors placeholder-neutral-600"
                     placeholder="Seu nome"
                     required
@@ -126,9 +163,10 @@ export default function Auth() {
                   type="password"
                   value={password}
                   onChange={e => setPassword(e.target.value)}
+                  minLength={6}
+                  maxLength={128}
                   className="w-full bg-neutral-900 border border-neutral-700 text-white text-sm px-4 py-4 focus:outline-none focus:border-amber-400 transition-colors placeholder-neutral-600"
                   placeholder="••••••••"
-                  minLength={6}
                   required
                 />
               </div>
