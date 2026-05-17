@@ -10,9 +10,17 @@ import type { ShippingAddress } from '../types/database';
 
 type Step = 'address' | 'payment' | 'review';
 
+const BRAZILIAN_STATES = [
+  'AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA',
+  'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN',
+  'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO',
+];
+
+const ZIP_REGEX = /^\d{5}-?\d{3}$/;
+
 export default function Checkout() {
   const { items, total, clearCart } = useCart();
-  const { user } = useAuth();
+  const { user, session } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
   const [step, setStep] = useState<Step>('address');
@@ -22,6 +30,7 @@ export default function Checkout() {
     full_name: '', street: '', number: '', complement: '',
     neighborhood: '', city: '', state: '', zip: '',
   });
+  const [serverTotal, setServerTotal] = useState<number | null>(null);
 
   function handleAddressChange(e: React.ChangeEvent<HTMLInputElement>) {
     setAddress(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -29,42 +38,64 @@ export default function Checkout() {
 
   function validateAddress() {
     const required = ['full_name', 'street', 'number', 'neighborhood', 'city', 'state', 'zip'] as const;
-    return required.every(k => (address[k] ?? '').trim() !== '');
+    for (const k of required) {
+      if (!(address[k] ?? '').trim()) {
+        toast('Preencha todos os campos obrigatórios', 'error');
+        return false;
+      }
+    }
+    if (address.zip && !ZIP_REGEX.test(address.zip)) {
+      toast('CEP inválido', 'error');
+      return false;
+    }
+    if (address.state && !BRAZILIAN_STATES.includes(address.state.toUpperCase())) {
+      toast('Estado inválido', 'error');
+      return false;
+    }
+    return true;
   }
 
   async function handleOrder() {
-    if (!user) { navigate('/auth'); return; }
+    if (!user || !session) { navigate('/auth'); return; }
     setLoading(true);
-    const { data: order, error } = await supabase.from('orders').insert({
-      user_id: user.id,
-      status: 'pending',
-      total,
-      payment_method: paymentMethod,
-      payment_status: 'pending',
-      shipping_address: address,
-    }).select().maybeSingle();
 
-    if (error || !order) {
-      toast('Erro ao criar pedido. Tente novamente.', 'error');
-      setLoading(false);
-      return;
+    try {
+      const edgeUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/calculate-order`;
+
+      const response = await fetch(edgeUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({
+          items: items.map(item => ({
+            product_id: item.product.id,
+            quantity: item.quantity,
+            size: item.size,
+            color: item.color,
+          })),
+          payment_method: paymentMethod,
+          shipping_address: address,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        toast(result.error || 'Erro ao criar pedido', 'error');
+        setLoading(false);
+        return;
+      }
+
+      setServerTotal(result.order.total);
+      clearCart();
+      toast('Pedido realizado com sucesso!');
+      navigate('/pedidos');
+    } catch {
+      toast('Erro de conexão. Tente novamente.', 'error');
     }
 
-    const orderItems = items.map(item => ({
-      order_id: order.id,
-      product_id: item.product.id,
-      product_name: item.product.name,
-      product_image: item.product.images?.[0] ?? '',
-      variant_size: item.size,
-      variant_color: item.color,
-      quantity: item.quantity,
-      unit_price: item.product.price,
-    }));
-
-    await supabase.from('order_items').insert(orderItems);
-    clearCart();
-    toast('Pedido realizado com sucesso!');
-    navigate('/pedidos');
     setLoading(false);
   }
 
@@ -83,6 +114,8 @@ export default function Checkout() {
 
   const steps: Step[] = ['address', 'payment', 'review'];
   const stepLabels = { address: 'Endereço', payment: 'Pagamento', review: 'Revisão' };
+  const displayTotal = serverTotal ?? (paymentMethod === 'pix' ? total * 0.95 : total);
+  const displayDiscount = paymentMethod === 'pix' ? total * 0.05 : 0;
 
   return (
     <div className="bg-black min-h-screen pt-16">
@@ -139,7 +172,7 @@ export default function Checkout() {
                   ))}
                 </div>
                 <button
-                  onClick={() => validateAddress() ? setStep('payment') : toast('Preencha todos os campos obrigatórios', 'error')}
+                  onClick={() => validateAddress() && setStep('payment')}
                   className="mt-8 bg-amber-400 text-black text-xs tracking-[0.2em] uppercase px-12 py-4 hover:bg-amber-300 transition-colors"
                 >
                   Continuar
@@ -253,12 +286,12 @@ export default function Checkout() {
                 {paymentMethod === 'pix' && (
                   <div className="flex justify-between mb-2">
                     <span className="text-amber-400 text-xs">Desconto PIX (5%)</span>
-                    <span className="text-amber-400 text-xs">-R$ {(total * 0.05).toFixed(2).replace('.', ',')}</span>
+                    <span className="text-amber-400 text-xs">-R$ {displayDiscount.toFixed(2).replace('.', ',')}</span>
                   </div>
                 )}
                 <div className="flex justify-between mt-4 pt-4 border-t border-neutral-800">
                   <span className="text-white text-xs tracking-[0.15em] uppercase">Total</span>
-                  <span className="text-white text-base">R$ {(paymentMethod === 'pix' ? total * 0.95 : total).toFixed(2).replace('.', ',')}</span>
+                  <span className="text-white text-base">R$ {displayTotal.toFixed(2).replace('.', ',')}</span>
                 </div>
               </div>
             </div>
