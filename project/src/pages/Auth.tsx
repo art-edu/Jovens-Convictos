@@ -84,7 +84,7 @@ export default function Auth() {
       {/* Left image */}
       <div className="hidden lg:block w-1/2 relative">
         <img
-          src="https://images.pexels.com/photos/2897531/pexels-photo-2897531.jpeg"
+          src="https://files.catbox.moe/tu36t5.jpg"
           alt="Auth"
           className="w-full h-full object-cover"
         />

@@ -51,8 +51,7 @@ export default function Footer() {
               {[
                 { label: 'Sobre Nós', href: '/sobre' },
                 { label: 'Contato', href: '/contato' },
-                { label: 'Trocas e Devoluções', href: '/contato' },
-                { label: 'Política de Privacidade', href: '/contato' },
+                
               ].map(l => (
                 <li key={l.label}>
                   <Link to={l.href} className="text-neutral-500 text-xs tracking-wide hover:text-white transition-colors duration-300">
@@ -68,11 +67,11 @@ export default function Footer() {
             <ul className="space-y-3">
               <li>
                 <a href="mailto:contato@jovensconvictos.com" className="text-neutral-500 text-xs tracking-wide hover:text-white transition-colors duration-300">
-                  contato@jovensconvictos.com
+                  jovensiba07@gmail.com
                 </a>
               </li>
               <li>
-                <a href="https://wa.me/5500000000000" className="text-neutral-500 text-xs tracking-wide hover:text-white transition-colors duration-300">
+                <a href="https://wa.me/89 9421-8604" className="text-neutral-500 text-xs tracking-wide hover:text-white transition-colors duration-300">
                   WhatsApp
                 </a>
               </li>

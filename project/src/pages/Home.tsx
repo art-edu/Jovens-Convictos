@@ -106,16 +106,16 @@ export default function Home() {
               viewport={{ once: true }}
               transition={{ duration: 0.8 }}
             >
-              <p className="text-amber-400 text-xs tracking-[0.35em] uppercase mb-6">Nossa Missão</p>
+              <p className="text-blue-300 text-xs tracking-[0.35em] uppercase mb-6">Nossa Missão</p>
               <h2 className="font-serif text-white text-4xl md:text-5xl tracking-wide leading-tight mb-8">
-                Moda que carrega<br />uma mensagem
+                Cada peça carrega<br />uma mensagem
               </h2>
               <p className="text-neutral-400 text-sm leading-relaxed tracking-wide mb-8">
                 Cada peça da Jovens Convictos foi criada para ser mais do que vestuário — é uma declaração de fé. Somos jovens que vivem o que creem, e cada detalhe reflete essa convicção.
               </p>
               <Link
                 to="/sobre"
-                className="inline-flex items-center gap-2 text-amber-400 text-xs tracking-[0.2em] uppercase hover:gap-4 transition-all duration-300"
+                className="inline-flex items-center gap-2 text-blue-300 text-xs tracking-[0.2em] uppercase hover:gap-4 transition-all duration-300"
               >
                 Conhecer Nossa História <ArrowRight size={14} />
               </Link>
@@ -149,7 +149,7 @@ export default function Home() {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <p className="text-amber-400 text-xs tracking-[0.35em] uppercase mb-4">Explorar</p>
+            <p className="text-blue-300 text-xs tracking-[0.35em] uppercase mb-4">Explorar</p>
             <h2 className="font-serif text-white text-3xl md:text-4xl tracking-wide">Nossas Categorias</h2>
           </motion.div>
 
@@ -190,7 +190,7 @@ export default function Home() {
             className="flex items-end justify-between mb-16"
           >
             <div>
-              <p className="text-amber-400 text-xs tracking-[0.35em] uppercase mb-4">Destaques</p>
+              <p className="text-blue-300 text-xs tracking-[0.35em] uppercase mb-4">Destaques</p>
               <h2 className="font-serif text-white text-3xl md:text-4xl tracking-wide">Peças da Coleção</h2>
             </div>
             <Link to="/catalogo" className="hidden md:flex items-center gap-2 text-neutral-400 text-xs tracking-[0.2em] uppercase hover:text-white transition-colors">
@@ -220,7 +220,7 @@ export default function Home() {
       <section className="relative py-0 overflow-hidden">
         <div className="h-[60vh] relative">
           <img
-            src="https://images.pexels.com/photos/5325561/pexels-photo-5325561.jpeg"
+            src="https://files.catbox.moe/6hd5ek.jpg"
             alt="Banner"
             className="w-full h-full object-cover"
           />
@@ -232,7 +232,7 @@ export default function Home() {
               viewport={{ once: true }}
               transition={{ duration: 0.8 }}
             >
-              <p className="text-amber-400 text-xs tracking-[0.4em] uppercase mb-6">Versículo</p>
+              <p className="text-blue-300 text-xs tracking-[0.4em] uppercase mb-6">Versículo</p>
               <blockquote className="font-serif text-white text-2xl md:text-4xl lg:text-5xl tracking-wide leading-tight max-w-3xl">
                 "Tudo posso naquele que me fortalece"
               </blockquote>
