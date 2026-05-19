@@ -112,7 +112,7 @@ export default function Auth() {
                 key={m}
                 onClick={() => setMode(m)}
                 className={`flex-1 text-xs tracking-[0.2em] uppercase py-4 transition-colors ${
-                  mode === m ? 'text-white border-b-2 border-amber-400 -mb-[2px]' : 'text-neutral-600 hover:text-neutral-400'
+                  mode === m ? 'text-white border-b-2 border-blue-300 -mb-[2px]' : 'text-neutral-600 hover:text-neutral-400'
                 }`}
               >
                 {m === 'login' ? 'Entrar' : 'Criar Conta'}
@@ -173,7 +173,7 @@ export default function Auth() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-amber-400 text-black text-xs tracking-[0.25em] uppercase py-5 hover:bg-amber-300 transition-colors disabled:opacity-50 mt-4"
+                className="w-full bg-blue-300 text-black text-xs tracking-[0.25em] uppercase py-5 hover:bg-amber-300 transition-colors disabled:opacity-50 mt-4"
               >
                 {loading ? 'Aguarde...' : mode === 'login' ? 'Entrar' : 'Criar Conta'}
               </button>
