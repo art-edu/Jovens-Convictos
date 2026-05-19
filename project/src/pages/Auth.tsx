@@ -140,7 +140,7 @@ export default function Auth() {
                     value={fullName}
                     onChange={e => setFullName(e.target.value)}
                     maxLength={100}
-                    className="w-full bg-neutral-900 border border-neutral-700 text-white text-sm px-4 py-4 focus:outline-none focus:border-amber-400 transition-colors placeholder-neutral-600"
+                    className="w-full bg-neutral-900 border border-white-300 text-white text-sm px-4 py-4 focus:outline-none focus:border-blue-300 transition-colors placeholder-neutral-600"
                     placeholder="Seu nome"
                     required
                   />
@@ -152,7 +152,7 @@ export default function Auth() {
                   type="email"
                   value={email}
                   onChange={e => setEmail(e.target.value)}
-                  className="w-full bg-neutral-900 border border-neutral-700 text-white text-sm px-4 py-4 focus:outline-none focus:border-amber-400 transition-colors placeholder-neutral-600"
+                  className="w-full bg-neutral-900 border border-white-300 text-white text-sm px-4 py-4 focus:outline-none focus:border-blue-300 transition-colors placeholder-neutral-600"
                   placeholder="seu@email.com"
                   required
                 />
@@ -165,7 +165,7 @@ export default function Auth() {
                   onChange={e => setPassword(e.target.value)}
                   minLength={6}
                   maxLength={128}
-                  className="w-full bg-neutral-900 border border-neutral-700 text-white text-sm px-4 py-4 focus:outline-none focus:border-amber-400 transition-colors placeholder-neutral-600"
+                  className="w-full bg-neutral-900 border border-white-300 text-white text-sm px-4 py-4 focus:outline-none focus:border-blue-300 transition-colors placeholder-neutral-600"
                   placeholder="••••••••"
                   required
                 />
@@ -173,7 +173,7 @@ export default function Auth() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-blue-300 text-black text-xs tracking-[0.25em] uppercase py-5 hover:bg-amber-300 transition-colors disabled:opacity-50 mt-4"
+                className="w-full bg-blue-300 text-black text-xs tracking-[0.25em] uppercase py-5 hover:bg-blue-50 transition-colors disabled:opacity-50 mt-4"
               >
                 {loading ? 'Aguarde...' : mode === 'login' ? 'Entrar' : 'Criar Conta'}
               </button>

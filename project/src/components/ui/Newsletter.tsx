@@ -32,7 +32,7 @@ export default function Newsletter() {
           viewport={{ once: true }}
           className="text-center max-w-xl mx-auto"
         >
-          <p className="text-amber-400 text-xs tracking-[0.35em] uppercase mb-4">Newsletter</p>
+          <p className="text-blue-300 text-xs tracking-[0.35em] uppercase mb-4">Newsletter</p>
           <h2 className="font-serif text-white text-3xl tracking-wide mb-4">Fique por Dentro</h2>
           <p className="text-neutral-500 text-sm tracking-wide mb-10">
             Receba novidades, lançamentos exclusivos e mensagens de fé diretamente no seu e-mail.
@@ -43,13 +43,13 @@ export default function Newsletter() {
               value={email}
               onChange={e => setEmail(e.target.value)}
               placeholder="Seu melhor e-mail"
-              className="flex-1 bg-neutral-900 border border-neutral-700 text-white text-sm px-5 py-4 focus:outline-none focus:border-amber-400 transition-colors placeholder-neutral-600"
+              className="flex-1 bg-neutral-900 border border-neutral-700 text-white text-sm px-5 py-4 focus:outline-none focus:border-blue-300 transition-colors placeholder-neutral-600"
               required
             />
             <button
               type="submit"
               disabled={loading}
-              className="bg-amber-400 text-black px-6 py-4 hover:bg-amber-300 transition-colors flex items-center gap-2 text-xs tracking-widest uppercase disabled:opacity-50"
+              className="bg-blue-300 text-black px-6 py-4 hover:bg-amber-300 transition-colors flex items-center gap-2 text-xs tracking-widest uppercase disabled:opacity-50"
             >
               {loading ? '...' : <ArrowRight size={16} />}
             </button>
