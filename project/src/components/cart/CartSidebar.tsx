@@ -27,7 +27,7 @@ export default function CartSidebar() {
           >
             <div className="flex items-center justify-between px-6 h-16 border-b border-neutral-800">
               <div className="flex items-center gap-3">
-                <ShoppingBag size={18} className="text-amber-400" />
+                <ShoppingBag size={18} className="text-blue-400" />
                 <span className="text-white text-xs tracking-[0.2em] uppercase">
                   Carrinho {items.length > 0 && `(${items.length})`}
                 </span>
@@ -45,7 +45,7 @@ export default function CartSidebar() {
                 </p>
                 <button
                   onClick={closeCart}
-                  className="mt-4 text-xs tracking-[0.2em] uppercase text-amber-400 hover:text-amber-300 transition-colors border border-amber-400/30 hover:border-amber-300/50 px-6 py-3"
+                  className="mt-4 text-xs tracking-[0.2em] uppercase text-blue-300 hover:text-blue-300 transition-colors border border-blue-300/30 hover:border-blue-300/50 px-6 py-3"
                 >
                   Continuar Comprando
                 </button>
@@ -66,7 +66,7 @@ export default function CartSidebar() {
                         <p className="text-white text-xs tracking-wide font-light truncate">{item.product.name}</p>
                         {item.size && <p className="text-neutral-500 text-xs mt-1">Tamanho: {item.size}</p>}
                         {item.color && <p className="text-neutral-500 text-xs">Cor: {item.color}</p>}
-                        <p className="text-amber-400 text-sm mt-2">
+                        <p className="text-blue-300 text-sm mt-2">
                           R$ {(item.product.price * item.quantity).toFixed(2).replace('.', ',')}
                         </p>
                         <div className="flex items-center gap-3 mt-3">

@@ -43,7 +43,7 @@ export default function Navbar() {
         transition={{ duration: 0.6, ease: 'easeOut' }}
       >
         <div className="max-w-screen-xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link to="/" className="font-serif text-white text-lg tracking-[0.25em] uppercase hover:text-amber-400 transition-colors duration-300">
+          <Link to="/" className="font-serif text-white text-lg tracking-[0.25em] uppercase hover:text-blue-300 transition-colors duration-300">
             Jovens Convictos
           </Link>
 
