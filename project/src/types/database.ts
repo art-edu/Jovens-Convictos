@@ -26,11 +26,7 @@ export interface Database {
         Insert: Partial<OrderItem>;
         Update: Partial<OrderItem>;
       };
-      newsletter_subscribers: {
-        Row: NewsletterSubscriber;
-        Insert: Partial<NewsletterSubscriber>;
-        Update: Partial<NewsletterSubscriber>;
-      };
+      
     };
   };
 }
@@ -105,11 +101,6 @@ export interface ShippingAddress {
   zip?: string;
 }
 
-export interface NewsletterSubscriber {
-  id: string;
-  email: string;
-  subscribed_at: string;
-}
 
 export interface CartItem {
   product: Product;

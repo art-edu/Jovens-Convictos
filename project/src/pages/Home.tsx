@@ -6,7 +6,6 @@ import { supabase } from '../lib/supabase';
 import type { Product } from '../types/database';
 import ProductCard from '../components/product/ProductCard';
 import Footer from '../components/layout/Footer';
-import Newsletter from '../components/ui/Newsletter';
 
 export default function Home() {
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
@@ -242,7 +241,7 @@ export default function Home() {
         </div>
       </section>
 
-      <Newsletter />
+
       <Footer />
     </div>
   );

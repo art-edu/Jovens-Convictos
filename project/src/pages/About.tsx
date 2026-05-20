@@ -2,7 +2,6 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import Footer from '../components/layout/Footer';
-import Newsletter from '../components/ui/Newsletter';
 
 export default function About() {
   return (
@@ -89,7 +88,6 @@ export default function About() {
         </div>
       </section>
 
-      <Newsletter />
       <Footer />
     </div>
   );
