@@ -36,14 +36,13 @@ export default function Contact() {
           <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6 }}>
             <h2 className="font-serif text-white text-2xl tracking-wide mb-8">Estamos aqui para você</h2>
             <p className="text-neutral-400 text-sm leading-relaxed tracking-wide mb-12">
-              Dúvidas sobre produtos, tamanhos, rastreamento de pedidos ou qualquer outra questão — nossa equipe responde em até 24 horas.
+              Dúvidas sobre produtos, tamanhos,ou qualquer outra questão — nossa equipe responde em até 24 horas.
             </p>
 
             <div className="space-y-8">
               {[
-                { icon: Mail, label: 'E-mail', value: 'contato@jovensconvictos.com', href: 'mailto:contato@jovensconvictos.com' },
+                { icon: Mail, label: 'E-mail', value: 'jovensiba7@gmai.com'},
                 { icon: MessageSquare, label: 'WhatsApp', value: '+55 (11) 99999-9999', href: 'https://wa.me/5511999999999' },
-                { icon: Instagram, label: 'Instagram', value: '@jovensconvictos', href: '#' },
               ].map(item => {
                 const Icon = item.icon;
                 return (

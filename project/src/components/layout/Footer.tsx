@@ -86,7 +86,6 @@ export default function Footer() {
           <div className="flex items-center gap-6">
             <span className="text-neutral-700 text-xs tracking-wide">PIX</span>
             <span className="text-neutral-700 text-xs tracking-wide">Cartão de Crédito</span>
-            <span className="text-neutral-700 text-xs tracking-wide">Boleto</span>
           </div>
         </div>
       </div>

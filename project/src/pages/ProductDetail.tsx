@@ -200,9 +200,7 @@ export default function ProductDetail() {
             )}
 
             <div className="border-t border-neutral-900 pt-6 space-y-3">
-              <p className="text-neutral-600 text-xs tracking-wide">Frete grátis acima de R$ 200</p>
               <p className="text-neutral-600 text-xs tracking-wide">Pagamento via PIX ou cartão</p>
-              <p className="text-neutral-600 text-xs tracking-wide">Entrega em 5-8 dias úteis</p>
               {!isOutOfStock && (
                 <p className="text-neutral-600 text-xs tracking-wide">
                   {product.stock <= 5

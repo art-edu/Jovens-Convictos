@@ -213,7 +213,7 @@ export default function Checkout() {
                 </div>
                 {paymentMethod === 'pix' && (
                   <div className="mt-6 p-5 bg-neutral-900 border border-neutral-800">
-                    <p className="text-neutral-400 text-xs tracking-wide mb-2">Após confirmar, você receberá a chave PIX por e-mail.</p>
+                    <p className="text-neutral-400 text-xs tracking-wide mb-2">Após confirmar, você receberá a chave PIX.</p>
                     <p className="text-amber-400 text-xs">Total com desconto: R$ {(total * 0.95).toFixed(2).replace('.', ',')}</p>
                   </div>
                 )}

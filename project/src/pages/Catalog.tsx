@@ -69,7 +69,7 @@ export default function Catalog() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <p className="text-amber-400 text-xs tracking-[0.4em] uppercase mb-4">Loja</p>
+          <p className="text-blue-300 text-xs tracking-[0.4em] uppercase mb-4">Loja</p>
           <h1 className="font-serif text-white text-4xl md:text-5xl tracking-wide">
             {activeCategory.label === 'Todos' ? 'Toda a Coleção' : activeCategory.label}
           </h1>
