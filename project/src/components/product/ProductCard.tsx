@@ -5,6 +5,7 @@ import { ShoppingBag } from 'lucide-react';
 import type { Product } from '../../types/database';
 import { useCart } from '../../contexts/CartContext';
 import { useToast } from '../../contexts/ToastContext';
+import { formatPrice, PLACEHOLDER_IMAGE } from '../../lib/utils';
 
 interface Props {
   product: Product;
@@ -29,7 +30,7 @@ export default function ProductCard({ product, index = 0 }: Props) {
     openCart();
   }
 
-  const image = product.images?.[0] || 'https://images.pexels.com/photos/8532616/pexels-photo-8532616.jpeg';
+  const image = product.images?.[0] || PLACEHOLDER_IMAGE;
 
   return (
     <motion.div
@@ -80,7 +81,7 @@ export default function ProductCard({ product, index = 0 }: Props) {
             {product.name}
           </p>
           <p className="text-neutral-400 text-sm mt-1 font-light">
-            R$ {product.price.toFixed(2).replace('.', ',')}
+            {formatPrice(product.price)}
           </p>
         </div>
       </Link>

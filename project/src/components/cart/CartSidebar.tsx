@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Minus, Plus, ShoppingBag } from 'lucide-react';
+import { formatPrice } from '../../lib/utils';
 import { Link } from 'react-router-dom';
 import { useCart } from '../../contexts/CartContext';
 
@@ -67,7 +68,7 @@ export default function CartSidebar() {
                         {item.size && <p className="text-neutral-500 text-xs mt-1">Tamanho: {item.size}</p>}
                         {item.color && <p className="text-neutral-500 text-xs">Cor: {item.color}</p>}
                         <p className="text-amber-400 text-sm mt-2">
-                          R$ {(item.product.price * item.quantity).toFixed(2).replace('.', ',')}
+                          {formatPrice(item.product.price * item.quantity)}
                         </p>
                         <div className="flex items-center gap-3 mt-3">
                           <button
@@ -99,7 +100,7 @@ export default function CartSidebar() {
                   <div className="flex items-center justify-between mb-6">
                     <span className="text-neutral-400 text-xs tracking-[0.15em] uppercase">Total</span>
                     <span className="text-white text-lg font-light">
-                      R$ {total.toFixed(2).replace('.', ',')}
+                      {formatPrice(total)}
                     </span>
                   </div>
                   <Link

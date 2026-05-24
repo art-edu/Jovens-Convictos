@@ -2,11 +2,11 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { CreditCard, QrCode, Check } from 'lucide-react';
-import { supabase } from '../lib/supabase';
 import { useCart } from '../contexts/CartContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import type { ShippingAddress } from '../types/database';
+import { formatPrice } from '../lib/utils';
 
 type Step = 'address' | 'payment' | 'review';
 
@@ -255,7 +255,7 @@ export default function Checkout() {
                 {paymentMethod === 'pix' && (
                   <div className="mt-6 p-5 bg-neutral-900 border border-neutral-800">
                     <p className="text-neutral-400 text-xs tracking-wide mb-2">Após confirmar, você receberá a chave PIX por e-mail.</p>
-                    <p className="text-amber-400 text-xs">Total com desconto: R$ {(total * 0.95).toFixed(2).replace('.', ',')}</p>
+                    <p className="text-amber-400 text-xs">Total com desconto: {formatPrice(total * 0.95)}</p>
                   </div>
                 )}
                 {paymentMethod === 'card' && (
@@ -332,7 +332,7 @@ export default function Checkout() {
                         {item.size && <p className="text-neutral-500 text-xs mt-0.5">Tam: {item.size}</p>}
                         <p className="text-neutral-500 text-xs">Qtd: {item.quantity}</p>
                       </div>
-                      <p className="text-amber-400 text-sm">R$ {(item.product.price * item.quantity).toFixed(2).replace('.', ',')}</p>
+                      <p className="text-amber-400 text-sm">{formatPrice(item.product.price * item.quantity)}</p>
                     </div>
                   ))}
                 </div>
@@ -365,23 +365,23 @@ export default function Checkout() {
               {items.map(item => (
                 <div key={`${item.product.id}-${item.size}`} className="flex justify-between mb-3">
                   <span className="text-neutral-400 text-xs">{item.product.name} x{item.quantity}</span>
-                  <span className="text-white text-xs">R$ {(item.product.price * item.quantity).toFixed(2).replace('.', ',')}</span>
+                  <span className="text-white text-xs">{formatPrice(item.product.price * item.quantity)}</span>
                 </div>
               ))}
               <div className="border-t border-neutral-800 pt-4 mt-4">
                 <div className="flex justify-between mb-2">
                   <span className="text-neutral-400 text-xs tracking-wide">Subtotal</span>
-                  <span className="text-white text-xs">R$ {total.toFixed(2).replace('.', ',')}</span>
+                  <span className="text-white text-xs">{formatPrice(total)}</span>
                 </div>
                 {paymentMethod === 'pix' && (
                   <div className="flex justify-between mb-2">
                     <span className="text-amber-400 text-xs">Desconto PIX (5%)</span>
-                    <span className="text-amber-400 text-xs">-R$ {displayDiscount.toFixed(2).replace('.', ',')}</span>
+                    <span className="text-amber-400 text-xs">-{formatPrice(displayDiscount)}</span>
                   </div>
                 )}
                 <div className="flex justify-between mt-4 pt-4 border-t border-neutral-800">
                   <span className="text-white text-xs tracking-[0.15em] uppercase">Total</span>
-                  <span className="text-white text-base">R$ {displayTotal.toFixed(2).replace('.', ',')}</span>
+                  <span className="text-white text-base">{formatPrice(displayTotal)}</span>
                 </div>
               </div>
             </div>

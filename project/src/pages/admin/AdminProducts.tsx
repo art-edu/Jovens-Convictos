@@ -6,6 +6,7 @@ import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../../contexts/ToastContext';
 import type { Product } from '../../types/database';
+import { formatPrice } from '../../lib/utils';
 
 export default function AdminProducts() {
   const { isAdmin, loading: authLoading } = useAuth();
@@ -102,7 +103,7 @@ export default function AdminProducts() {
                       <span className="text-neutral-400 text-xs tracking-widest uppercase">{product.category}</span>
                     </td>
                     <td className="px-4 py-4 hidden md:table-cell">
-                      <span className="text-amber-400 text-sm">R$ {product.price.toFixed(2).replace('.', ',')}</span>
+                      <span className="text-amber-400 text-sm">{formatPrice(product.price)}</span>
                     </td>
                     <td className="px-4 py-4 hidden md:table-cell">
                       <button

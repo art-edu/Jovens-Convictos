@@ -6,22 +6,7 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import type { Order, OrderItem } from '../types/database';
 import Footer from '../components/layout/Footer';
-
-const STATUS_LABELS: Record<string, string> = {
-  pending: 'Pendente',
-  processing: 'Processando',
-  shipped: 'Enviado',
-  delivered: 'Entregue',
-  cancelled: 'Cancelado',
-};
-
-const STATUS_COLORS: Record<string, string> = {
-  pending: 'text-amber-400',
-  processing: 'text-blue-400',
-  shipped: 'text-teal-400',
-  delivered: 'text-green-400',
-  cancelled: 'text-red-400',
-};
+import { formatPrice, formatDate, STATUS_LABELS, STATUS_COLORS } from '../lib/utils';
 
 interface OrderWithItems extends Order {
   items?: OrderItem[];
@@ -96,7 +81,7 @@ export default function Orders() {
                     <div className="text-left">
                       <p className="text-white text-sm font-light">#{order.id.slice(0, 8).toUpperCase()}</p>
                       <p className="text-neutral-600 text-xs mt-0.5">
-                        {new Date(order.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}
+                        {formatDate(order.created_at)}
                       </p>
                     </div>
                     <div className="hidden md:block">
@@ -106,7 +91,7 @@ export default function Orders() {
                     </div>
                   </div>
                   <div className="flex items-center gap-4">
-                    <span className="text-amber-400 text-sm">R$ {order.total.toFixed(2).replace('.', ',')}</span>
+                    <span className="text-amber-400 text-sm">{formatPrice(order.total)}</span>
                     <ChevronRight size={16} className={`text-neutral-600 transition-transform duration-300 ${expanded === order.id ? 'rotate-90' : ''}`} />
                   </div>
                 </button>
@@ -131,7 +116,7 @@ export default function Orders() {
                             {item.variant_size && <p className="text-neutral-500 text-xs">Tam: {item.variant_size}</p>}
                             <p className="text-neutral-500 text-xs">Qtd: {item.quantity}</p>
                           </div>
-                          <p className="text-amber-400 text-xs">R$ {(item.unit_price * item.quantity).toFixed(2).replace('.', ',')}</p>
+                          <p className="text-amber-400 text-xs">{formatPrice(item.unit_price * item.quantity)}</p>
                         </div>
                       ))}
                     </div>

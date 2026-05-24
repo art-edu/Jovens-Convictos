@@ -3,36 +3,129 @@ export interface Database {
     Tables: {
       profiles: {
         Row: Profile;
-        Insert: Partial<Profile>;
-        Update: Partial<Profile>;
+        Insert: ProfileInsert;
+        Update: Partial<ProfileInsert>;
+        Relationships: [];
       };
       products: {
         Row: Product;
-        Insert: Partial<Product>;
-        Update: Partial<Product>;
+        Insert: ProductInsert;
+        Update: Partial<ProductInsert>;
+        Relationships: [];
       };
       product_variants: {
         Row: ProductVariant;
-        Insert: Partial<ProductVariant>;
-        Update: Partial<ProductVariant>;
+        Insert: ProductVariantInsert;
+        Update: Partial<ProductVariantInsert>;
+        Relationships: [];
       };
       orders: {
         Row: Order;
-        Insert: Partial<Order>;
-        Update: Partial<Order>;
+        Insert: OrderInsert;
+        Update: Partial<OrderInsert>;
+        Relationships: [];
       };
       order_items: {
         Row: OrderItem;
-        Insert: Partial<OrderItem>;
-        Update: Partial<OrderItem>;
+        Insert: OrderItemInsert;
+        Update: Partial<OrderItemInsert>;
+        Relationships: [];
       };
       newsletter_subscribers: {
         Row: NewsletterSubscriber;
-        Insert: Partial<NewsletterSubscriber>;
-        Update: Partial<NewsletterSubscriber>;
+        Insert: NewsletterSubscriberInsert;
+        Update: Partial<NewsletterSubscriberInsert>;
+        Relationships: [];
+      };
+      contact_messages: {
+        Row: ContactMessage;
+        Insert: ContactMessageInsert;
+        Update: Partial<ContactMessageInsert>;
+        Relationships: [];
+      };
+    };
+    Views: Record<string, {
+      Row: Record<string, unknown>;
+      Relationships: [];
+    }>;
+    Functions: {
+      decrement_stock: {
+        Args: { product_id: string; quantity: number };
+        Returns: undefined;
+      };
+      process_order: {
+        Args: Record<string, unknown>;
+        Returns: Record<string, unknown>;
       };
     };
   };
+}
+
+export interface ProfileInsert {
+  id: string;
+  full_name: string;
+  phone?: string;
+  role?: string;
+}
+
+export interface ProductInsert {
+  name: string;
+  slug: string;
+  description?: string;
+  price: number;
+  category?: string;
+  images?: string[];
+  featured?: boolean;
+  active?: boolean;
+  stock?: number;
+}
+
+export interface ProductVariantInsert {
+  product_id: string;
+  size?: string;
+  color?: string;
+  stock?: number;
+}
+
+export interface OrderInsert {
+  user_id: string;
+  status?: string;
+  total: number;
+  payment_method: string;
+  payment_status?: string;
+  shipping_address?: ShippingAddress;
+  notes?: string;
+}
+
+export interface OrderItemInsert {
+  order_id: string;
+  product_id: string;
+  product_name: string;
+  product_image?: string;
+  variant_size?: string;
+  variant_color?: string;
+  quantity: number;
+  unit_price: number;
+}
+
+export interface NewsletterSubscriberInsert {
+  email: string;
+}
+
+export interface ContactMessage {
+  id?: string;
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+  created_at?: string;
+}
+
+export interface ContactMessageInsert {
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
 }
 
 export interface Profile {

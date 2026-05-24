@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShoppingBag, ArrowLeft, ZoomIn, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ShoppingBag, ZoomIn, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import type { Product } from '../types/database';
 import { useCart } from '../contexts/CartContext';
 import { useToast } from '../contexts/ToastContext';
 import ProductCard from '../components/product/ProductCard';
 import Footer from '../components/layout/Footer';
+import { formatPrice, PLACEHOLDER_IMAGE } from '../lib/utils';
 
 const SIZES = ['PP', 'P', 'M', 'G', 'GG', 'XGG'];
 
@@ -73,7 +74,7 @@ export default function ProductDetail() {
     );
   }
 
-  const images = product.images?.length ? product.images : [''];
+  const images = product.images?.length ? product.images : [PLACEHOLDER_IMAGE];
   const needsSize = product.category === 'camisas' || product.category === 'moletons';
   const isOutOfStock = product.stock === 0;
 
@@ -152,7 +153,7 @@ export default function ProductDetail() {
             <p className="text-neutral-500 text-xs tracking-[0.25em] uppercase mb-3">{product.category}</p>
             <h1 className="font-serif text-white text-3xl md:text-4xl tracking-wide mb-4">{product.name}</h1>
             <p className="text-amber-400 text-2xl font-light mb-8">
-              R$ {product.price.toFixed(2).replace('.', ',')}
+              {formatPrice(product.price)}
             </p>
 
             <div className="border-t border-neutral-900 pt-8 mb-8">

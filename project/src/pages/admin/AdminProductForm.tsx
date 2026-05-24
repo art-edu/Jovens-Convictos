@@ -1,13 +1,11 @@
 import { useEffect, useState, useRef } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { X, Plus, Image, Upload, Loader2 } from 'lucide-react';
+import { X, Upload, Loader2 } from 'lucide-react';
 import { supabase, uploadProductImage, deleteProductImage } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../../contexts/ToastContext';
 import type { Product } from '../../types/database';
-
-const CATEGORIES = ['camisas', 'bones', 'moletons', 'garrafas', 'figurinhas', 'acessorios', 'outros'];
+import { CATEGORY_VALUES } from '../../lib/utils';
 
 const empty: Partial<Product> = {
   name: '', slug: '', description: '', price: 0,
@@ -175,7 +173,7 @@ export default function AdminProductForm() {
                 <div>
                   <label className="text-neutral-400 text-xs tracking-[0.15em] uppercase block mb-2">Categoria</label>
                   <select name="category" value={form.category ?? 'camisas'} onChange={handleChange} className="w-full bg-neutral-900 border border-neutral-700 text-white text-sm px-4 py-3.5 focus:outline-none focus:border-amber-400 transition-colors">
-                    {CATEGORIES.map(c => <option key={c} value={c}>{c.charAt(0).toUpperCase() + c.slice(1)}</option>)}
+                    {CATEGORY_VALUES.map(c => <option key={c} value={c}>{c.charAt(0).toUpperCase() + c.slice(1)}</option>)}
                   </select>
                 </div>
               </div>

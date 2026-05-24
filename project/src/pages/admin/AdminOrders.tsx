@@ -6,14 +6,7 @@ import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../../contexts/ToastContext';
 import type { Order } from '../../types/database';
-
-const STATUSES = ['pending', 'processing', 'shipped', 'delivered', 'cancelled'];
-const STATUS_LABELS: Record<string, string> = {
-  pending: 'Pendente', processing: 'Processando', shipped: 'Enviado', delivered: 'Entregue', cancelled: 'Cancelado',
-};
-const STATUS_COLORS: Record<string, string> = {
-  pending: 'text-amber-400', processing: 'text-blue-400', shipped: 'text-teal-400', delivered: 'text-green-400', cancelled: 'text-red-400',
-};
+import { formatPrice, formatDate, STATUSES, STATUS_LABELS, STATUS_COLORS } from '../../lib/utils';
 
 export default function AdminOrders() {
   const { isAdmin, loading: authLoading } = useAuth();
@@ -80,7 +73,7 @@ export default function AdminOrders() {
                       <span className="text-neutral-400 text-xs">{order.user_id?.slice(0, 8)}</span>
                     </td>
                     <td className="px-4 py-4 hidden md:table-cell">
-                      <span className="text-amber-400 text-sm">R$ {order.total.toFixed(2).replace('.', ',')}</span>
+                      <span className="text-amber-400 text-sm">{formatPrice(order.total)}</span>
                     </td>
                     <td className="px-4 py-4 hidden md:table-cell">
                       <span className="text-neutral-400 text-xs uppercase tracking-widest">{order.payment_method}</span>
@@ -92,7 +85,7 @@ export default function AdminOrders() {
                     </td>
                     <td className="px-4 py-4 hidden md:table-cell">
                       <span className="text-neutral-500 text-xs">
-                        {new Date(order.created_at).toLocaleDateString('pt-BR')}
+                        {formatDate(order.created_at, { day: '2-digit', month: '2-digit', year: 'numeric' })}
                       </span>
                     </td>
                     <td className="px-4 py-4 text-right">

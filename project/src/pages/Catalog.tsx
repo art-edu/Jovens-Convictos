@@ -6,16 +6,9 @@ import { supabase } from '../lib/supabase';
 import type { Product } from '../types/database';
 import ProductCard from '../components/product/ProductCard';
 import Footer from '../components/layout/Footer';
+import { CATEGORIES } from '../lib/utils';
 
-const CATEGORIES = [
-  { value: '', label: 'Todos' },
-  { value: 'camisas', label: 'Camisas' },
-  { value: 'bones', label: 'Bonés' },
-  { value: 'moletons', label: 'Moletons' },
-  { value: 'garrafas', label: 'Garrafas' },
-  { value: 'figurinhas', label: 'Figurinhas' },
-  { value: 'acessorios', label: 'Acessórios' },
-];
+const ALL_CATEGORIES = [{ value: '', label: 'Todos' }, ...CATEGORIES];
 
 const SORT_OPTIONS = [
   { value: 'newest', label: 'Mais Recentes' },
@@ -58,7 +51,7 @@ export default function Catalog() {
     setParams(p);
   }
 
-  const activeCategory = CATEGORIES.find(c => c.value === category) ?? CATEGORIES[0];
+  const activeCategory = ALL_CATEGORIES.find(c => c.value === category) ?? ALL_CATEGORIES[0];
 
   return (
     <div className="bg-black min-h-screen pt-16">
@@ -81,7 +74,7 @@ export default function Catalog() {
         <div className="max-w-screen-xl mx-auto px-6 py-4 flex items-center justify-between gap-4">
           {/* Category filters - desktop */}
           <div className="hidden md:flex items-center gap-6">
-            {CATEGORIES.map(c => (
+            {ALL_CATEGORIES.map(c => (
               <button
                 key={c.value}
                 onClick={() => setCategory(c.value)}
@@ -122,7 +115,7 @@ export default function Catalog() {
         {/* Mobile categories dropdown */}
         {showFilters && (
           <div className="md:hidden px-6 pb-4 flex flex-wrap gap-3 border-t border-neutral-900 pt-4">
-            {CATEGORIES.map(c => (
+            {ALL_CATEGORIES.map(c => (
               <button
                 key={c.value}
                 onClick={() => { setCategory(c.value); setShowFilters(false); }}
