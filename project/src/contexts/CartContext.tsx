@@ -10,20 +10,24 @@ interface CartState {
 
 type CartAction =
   | { type: 'ADD_ITEM'; payload: CartItem }
-  | { type: 'REMOVE_ITEM'; payload: { productId: string; size: string; color: string } }
-  | { type: 'UPDATE_QTY'; payload: { productId: string; size: string; color: string; quantity: number } }
+  | { type: 'REMOVE_ITEM'; payload: { productId: string; size: string; color: string; variantId?: string } }
+  | { type: 'UPDATE_QTY'; payload: { productId: string; size: string; color: string; variantId?: string; quantity: number } }
   | { type: 'CLEAR_CART' }
   | { type: 'TOGGLE_CART' }
   | { type: 'OPEN_CART' }
   | { type: 'CLOSE_CART' }
   | { type: 'RESTORE_CART'; payload: CartItem[] };
 
+function itemKey(i: CartItem) {
+  return i.variant_id ? `${i.product.id}-${i.variant_id}` : `${i.product.id}-${i.size}-${i.color}`;
+}
+
 interface CartContextType {
   items: CartItem[];
   isOpen: boolean;
-  addItem: (product: import('../types/database').Product, size: string, color: string) => void;
-  removeItem: (productId: string, size: string, color: string) => void;
-  updateQty: (productId: string, size: string, color: string, quantity: number) => void;
+  addItem: (product: import('../types/database').Product, size: string, color: string, variantId?: string) => void;
+  removeItem: (productId: string, size: string, color: string, variantId?: string) => void;
+  updateQty: (productId: string, size: string, color: string, quantity: number, variantId?: string) => void;
   clearCart: () => void;
   toggleCart: () => void;
   openCart: () => void;
@@ -56,33 +60,37 @@ function saveCart(items: CartItem[]) {
 function cartReducer(state: CartState, action: CartAction): CartState {
   switch (action.type) {
     case 'ADD_ITEM': {
-      const key = (i: CartItem) => `${i.product.id}-${i.size}-${i.color}`;
-      const newKey = key(action.payload);
-      const exists = state.items.find(i => key(i) === newKey);
+      const newKey = itemKey(action.payload);
+      const exists = state.items.find(i => itemKey(i) === newKey);
       if (exists) {
         return {
           ...state,
-          items: state.items.map(i => key(i) === newKey ? { ...i, quantity: i.quantity + action.payload.quantity } : i),
+          items: state.items.map(i => itemKey(i) === newKey ? { ...i, quantity: i.quantity + action.payload.quantity } : i),
         };
       }
       return { ...state, items: [...state.items, action.payload] };
     }
-    case 'REMOVE_ITEM':
+    case 'REMOVE_ITEM': {
+      const payload = action.payload;
       return {
         ...state,
-        items: state.items.filter(
-          i => !(i.product.id === action.payload.productId && i.size === action.payload.size && i.color === action.payload.color)
-        ),
+        items: state.items.filter(i => {
+          const id = payload.variantId ?? `${payload.productId}-${payload.size}-${payload.color}`;
+          return itemKey(i) !== id;
+        }),
       };
-    case 'UPDATE_QTY':
+    }
+    case 'UPDATE_QTY': {
+      const payload = action.payload;
       return {
         ...state,
         items: state.items.map(i =>
-          i.product.id === action.payload.productId && i.size === action.payload.size && i.color === action.payload.color
-            ? { ...i, quantity: action.payload.quantity }
+          itemKey(i) === (payload.variantId ?? `${payload.productId}-${payload.size}-${payload.color}`)
+            ? { ...i, quantity: payload.quantity }
             : i
         ).filter(i => i.quantity > 0),
       };
+    }
     case 'CLEAR_CART':
       return { ...state, items: [] };
     case 'TOGGLE_CART':
@@ -112,9 +120,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
     <CartContext.Provider value={{
       items: state.items,
       isOpen: state.isOpen,
-      addItem: (product, size, color) => dispatch({ type: 'ADD_ITEM', payload: { product, quantity: 1, size, color } }),
-      removeItem: (productId, size, color) => dispatch({ type: 'REMOVE_ITEM', payload: { productId, size, color } }),
-      updateQty: (productId, size, color, quantity) => dispatch({ type: 'UPDATE_QTY', payload: { productId, size, color, quantity } }),
+      addItem: (product, size, color, variantId) => dispatch({
+        type: 'ADD_ITEM', payload: { product, quantity: 1, size, color, ...(variantId ? { variant_id: variantId } : {}) },
+      }),
+      removeItem: (productId, size, color, variantId) => dispatch({ type: 'REMOVE_ITEM', payload: { productId, size, color, variantId } }),
+      updateQty: (productId, size, color, quantity, variantId) => dispatch({ type: 'UPDATE_QTY', payload: { productId, size, color, quantity, variantId } }),
       clearCart: () => dispatch({ type: 'CLEAR_CART' }),
       toggleCart: () => dispatch({ type: 'TOGGLE_CART' }),
       openCart: () => dispatch({ type: 'OPEN_CART' }),

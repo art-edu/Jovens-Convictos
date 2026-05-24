@@ -115,6 +115,7 @@ export default function Checkout() {
             quantity: item.quantity,
             size: item.size,
             color: item.color,
+            variant_id: item.variant_id,
           })),
           payment_method: paymentMethod,
           shipping_address: address,

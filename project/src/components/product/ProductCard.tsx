@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ShoppingBag } from 'lucide-react';
 import type { Product } from '../../types/database';
@@ -16,13 +16,19 @@ export default function ProductCard({ product, index = 0 }: Props) {
   const [hovered, setHovered] = useState(false);
   const { addItem, openCart } = useCart();
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const isOutOfStock = product.stock === 0;
+  const needsSize = product.category === 'camisas' || product.category === 'moletons';
 
   function handleQuickAdd(e: React.MouseEvent) {
     e.preventDefault();
     if (isOutOfStock) {
       toast('Produto esgotado', 'error');
+      return;
+    }
+    if (needsSize) {
+      navigate(`/produto/${product.slug}`);
       return;
     }
     addItem(product, '', '');
@@ -68,7 +74,7 @@ export default function ProductCard({ product, index = 0 }: Props) {
               className="absolute bottom-4 left-4 right-4 bg-white text-black text-xs tracking-[0.15em] uppercase py-3 flex items-center justify-center gap-2 hover:bg-amber-400 transition-colors duration-300"
             >
               <ShoppingBag size={14} />
-              Adicionar
+              {needsSize ? 'Ver Tamanhos' : 'Adicionar'}
             </motion.button>
           )}
         </div>

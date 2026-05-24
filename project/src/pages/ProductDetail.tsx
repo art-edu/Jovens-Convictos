@@ -3,22 +3,22 @@ import { useParams, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShoppingBag, ZoomIn, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { supabase } from '../lib/supabase';
-import type { Product } from '../types/database';
+import type { Product, ProductVariant } from '../types/database';
 import { useCart } from '../contexts/CartContext';
 import { useToast } from '../contexts/ToastContext';
 import ProductCard from '../components/product/ProductCard';
 import Footer from '../components/layout/Footer';
 import { formatPrice, PLACEHOLDER_IMAGE } from '../lib/utils';
 
-const SIZES = ['PP', 'P', 'M', 'G', 'GG', 'XGG'];
-
 export default function ProductDetail() {
   const { slug } = useParams<{ slug: string }>();
   const [product, setProduct] = useState<Product | null>(null);
+  const [variants, setVariants] = useState<ProductVariant[]>([]);
   const [related, setRelated] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedSize, setSelectedSize] = useState('');
+  const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(null);
   const [zoomed, setZoomed] = useState(false);
   const { addItem, openCart } = useCart();
   const { toast } = useToast();
@@ -30,11 +30,18 @@ export default function ProductDetail() {
         setProduct(data);
         setLoading(false);
         if (data) {
+          supabase.from('product_variants').select('*').eq('product_id', data.id)
+            .then(({ data: vars }) => setVariants(vars ?? []));
           supabase.from('products').select('*').eq('category', data.category).neq('slug', slug).eq('active', true).limit(4)
             .then(({ data: rel }) => setRelated(rel ?? []));
         }
       });
   }, [slug]);
+
+  useEffect(() => {
+    const v = variants.find(v => v.size === selectedSize);
+    setSelectedVariant(v ?? null);
+  }, [selectedSize, variants]);
 
   function handleAddToCart() {
     if (!product) return;
@@ -42,13 +49,18 @@ export default function ProductDetail() {
       toast('Produto esgotado', 'error');
       return;
     }
-    if (product.category === 'camisas' || product.category === 'moletons') {
+    const needsSize = product.category === 'camisas' || product.category === 'moletons';
+    if (needsSize) {
       if (!selectedSize) {
         toast('Selecione um tamanho', 'error');
         return;
       }
+      if (selectedVariant && selectedVariant.stock === 0) {
+        toast('Tamanho esgotado', 'error');
+        return;
+      }
     }
-    addItem(product, selectedSize, '');
+    addItem(product, selectedSize, '', selectedVariant?.id);
     toast(`${product.name} adicionado ao carrinho`);
     openCart();
   }
@@ -160,7 +172,7 @@ export default function ProductDetail() {
               <p className="text-neutral-400 text-sm leading-relaxed tracking-wide">{product.description}</p>
             </div>
 
-            {needsSize && (
+            {needsSize && variants.length > 0 && (
               <div className="mb-8">
                 <div className="flex items-center justify-between mb-4">
                   <span className="text-white text-xs tracking-[0.2em] uppercase">Tamanho</span>
@@ -169,17 +181,20 @@ export default function ProductDetail() {
                   )}
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  {SIZES.map(size => (
+                  {variants.map(v => (
                     <button
-                      key={size}
-                      onClick={() => setSelectedSize(size)}
+                      key={v.id}
+                      onClick={() => setSelectedSize(v.size)}
+                      disabled={v.stock === 0}
                       className={`w-12 h-12 text-xs tracking-widest uppercase border transition-all duration-200 ${
-                        selectedSize === size
-                          ? 'bg-white text-black border-white'
-                          : 'bg-transparent text-neutral-400 border-neutral-700 hover:border-neutral-500 hover:text-white'
+                        v.stock === 0
+                          ? 'border-neutral-800 text-neutral-700 line-through cursor-not-allowed'
+                          : selectedSize === v.size
+                            ? 'bg-white text-black border-white'
+                            : 'bg-transparent text-neutral-400 border-neutral-700 hover:border-neutral-500 hover:text-white'
                       }`}
                     >
-                      {size}
+                      {v.size}
                     </button>
                   ))}
                 </div>
@@ -206,9 +221,13 @@ export default function ProductDetail() {
               <p className="text-neutral-600 text-xs tracking-wide">Entrega em 5-8 dias úteis</p>
               {!isOutOfStock && (
                 <p className="text-neutral-600 text-xs tracking-wide">
-                  {product.stock <= 5
-                    ? `Últimas ${product.stock} unidades em estoque`
-                    : 'Em estoque'}
+                  {selectedVariant
+                    ? selectedVariant.stock <= 5
+                      ? `Últimas ${selectedVariant.stock} unidades neste tamanho`
+                      : 'Em estoque'
+                    : product.stock <= 5
+                      ? `Últimas ${product.stock} unidades em estoque`
+                      : 'Em estoque'}
                 </p>
               )}
             </div>

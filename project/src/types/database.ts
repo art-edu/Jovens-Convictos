@@ -213,4 +213,5 @@ export interface CartItem {
   quantity: number;
   size: string;
   color: string;
+  variant_id?: string;
 }

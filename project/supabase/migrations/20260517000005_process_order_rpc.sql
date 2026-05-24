@@ -15,14 +15,18 @@ DECLARE
   v_total NUMERIC := 0;
   v_item JSONB;
   v_product RECORD;
+  v_variant RECORD;
   v_is_pix BOOLEAN;
   v_items_data JSONB := '[]'::JSONB;
+  v_has_variant BOOLEAN;
 BEGIN
   v_is_pix := p_payment_method = 'pix';
 
-  -- Lock products and validate stock in one atomic pass
+  -- Lock products/variants and validate stock in one atomic pass
   FOR v_item IN SELECT * FROM jsonb_array_elements(p_items)
   LOOP
+    v_has_variant := (v_item->>'variant_id') IS NOT NULL AND (v_item->>'variant_id') <> '';
+
     SELECT id, name, price, stock, active, images INTO v_product
     FROM products
     WHERE id = (v_item->>'product_id')::UUID
@@ -36,11 +40,30 @@ BEGIN
       RETURN jsonb_build_object('error', 'Produto "' || v_product.name || '" não está disponível');
     END IF;
 
-    IF v_product.stock < (v_item->>'quantity')::INTEGER THEN
-      RETURN jsonb_build_object(
-        'error',
-        'Estoque insuficiente para "' || v_product.name || '". Disponível: ' || v_product.stock
-      );
+    IF v_has_variant THEN
+      SELECT id, stock INTO v_variant
+      FROM product_variants
+      WHERE id = (v_item->>'variant_id')::UUID
+        AND product_id = v_product.id
+      FOR UPDATE;
+
+      IF NOT FOUND THEN
+        RETURN jsonb_build_object('error', 'Variação não encontrada para "' || v_product.name || '"');
+      END IF;
+
+      IF v_variant.stock < (v_item->>'quantity')::INTEGER THEN
+        RETURN jsonb_build_object(
+          'error',
+          'Estoque insuficiente para "' || v_product.name || '". Disponível: ' || v_variant.stock
+        );
+      END IF;
+    ELSE
+      IF v_product.stock < (v_item->>'quantity')::INTEGER THEN
+        RETURN jsonb_build_object(
+          'error',
+          'Estoque insuficiente para "' || v_product.name || '". Disponível: ' || v_product.stock
+        );
+      END IF;
     END IF;
 
     v_subtotal := v_subtotal + (v_product.price * (v_item->>'quantity')::INTEGER);
@@ -51,6 +74,7 @@ BEGIN
       'product_image', COALESCE(v_product.images[1], ''),
       'variant_size', COALESCE(v_item->>'size', ''),
       'variant_color', COALESCE(v_item->>'color', ''),
+      'variant_id', COALESCE(v_item->>'variant_id', ''),
       'quantity', (v_item->>'quantity')::INTEGER,
       'unit_price', v_product.price
     );
@@ -75,6 +99,19 @@ BEGIN
     (x.item->>'unit_price')::NUMERIC
   FROM jsonb_array_elements(v_items_data) AS x(item);
 
+  -- Decrement variant stock when variant_id is present, otherwise product stock
+  UPDATE product_variants pv
+  SET stock = pv.stock - x.qty
+  FROM (
+    SELECT
+      (item->>'variant_id')::UUID AS vid,
+      (item->>'quantity')::INTEGER AS qty
+    FROM jsonb_array_elements(p_items) AS item
+    WHERE (item->>'variant_id') IS NOT NULL AND (item->>'variant_id') <> ''
+  ) AS x
+  WHERE pv.id = x.vid
+    AND pv.stock >= x.qty;
+
   UPDATE products p
   SET stock = p.stock - x.qty
   FROM (
@@ -82,6 +119,7 @@ BEGIN
       (item->>'product_id')::UUID AS pid,
       (item->>'quantity')::INTEGER AS qty
     FROM jsonb_array_elements(p_items) AS item
+    WHERE (item->>'variant_id') IS NULL OR (item->>'variant_id') = ''
   ) AS x
   WHERE p.id = x.pid
     AND p.stock >= x.qty;

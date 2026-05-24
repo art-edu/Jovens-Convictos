@@ -11,6 +11,7 @@ interface OrderItemInput {
   quantity: number;
   size: string;
   color: string;
+  variant_id?: string;
 }
 
 interface RequestBody {
