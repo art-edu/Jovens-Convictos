@@ -31,9 +31,50 @@ export default function Checkout() {
     neighborhood: '', city: '', state: '', zip: '',
   });
   const [serverTotal, setServerTotal] = useState<number | null>(null);
+  const [card, setCard] = useState({ number: '', name: '', expiry: '', cvv: '' });
 
   function handleAddressChange(e: React.ChangeEvent<HTMLInputElement>) {
     setAddress(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  }
+
+  function formatCardNumber(value: string) {
+    return value.replace(/\D/g, '').replace(/(\d{4})(?=\d)/g, '$1 ').slice(0, 19);
+  }
+
+  function handleCardChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const { name, value } = e.target;
+    if (name === 'cardNumber') {
+      setCard(prev => ({ ...prev, number: formatCardNumber(value) }));
+    } else if (name === 'cardExpiry') {
+      const digits = value.replace(/\D/g, '');
+      const formatted = digits.replace(/(\d{2})(?=\d)/, '$1/').slice(0, 5);
+      setCard(prev => ({ ...prev, expiry: formatted }));
+    } else if (name === 'cardCvv') {
+      setCard(prev => ({ ...prev, cvv: value.replace(/\D/g, '').slice(0, 4) }));
+    } else {
+      setCard(prev => ({ ...prev, [name]: value }));
+    }
+  }
+
+  function validateCard() {
+    if (paymentMethod !== 'card') return true;
+    if (card.number.replace(/\s/g, '').length < 13) {
+      toast('Número do cartão inválido', 'error');
+      return false;
+    }
+    if (!card.name.trim()) {
+      toast('Preencha o nome no cartão', 'error');
+      return false;
+    }
+    if (card.expiry.length < 5) {
+      toast('Data de validade inválida', 'error');
+      return false;
+    }
+    if (card.cvv.length < 3) {
+      toast('CVV inválido', 'error');
+      return false;
+    }
+    return true;
   }
 
   function validateAddress() {
@@ -270,7 +311,7 @@ export default function Checkout() {
                   <button onClick={() => setStep('address')} className="border border-neutral-700 text-neutral-400 text-xs tracking-widest uppercase px-8 py-4 hover:border-neutral-500 transition-colors">
                     Voltar
                   </button>
-                  <button onClick={() => setStep('review')} className="bg-amber-400 text-black text-xs tracking-[0.2em] uppercase px-12 py-4 hover:bg-amber-300 transition-colors">
+                  <button onClick={() => validateCard() && setStep('review')} className="bg-amber-400 text-black text-xs tracking-[0.2em] uppercase px-12 py-4 hover:bg-amber-300 transition-colors">
                     Continuar
                   </button>
                 </div>
