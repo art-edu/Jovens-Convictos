@@ -13,6 +13,7 @@ export default function AdminOrders() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [orders, setOrders] = useState<Order[]>([]);
+  const [customerNames, setCustomerNames] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -22,7 +23,20 @@ export default function AdminOrders() {
   useEffect(() => {
     if (!isAdmin) return;
     supabase.from('orders').select('*').order('created_at', { ascending: false })
-      .then(({ data }) => { setOrders(data ?? []); setLoading(false); });
+      .then(({ data }) => {
+        const orders = data ?? [];
+        setOrders(orders);
+        const ids = [...new Set(orders.map(o => o.user_id))];
+        if (ids.length > 0) {
+          supabase.from('profiles').select('id, full_name').in('id', ids)
+            .then(({ data: profiles }) => {
+              const map: Record<string, string> = {};
+              profiles?.forEach(p => { map[p.id] = p.full_name; });
+              setCustomerNames(map);
+            });
+        }
+        setLoading(false);
+      });
   }, [isAdmin]);
 
   async function updateStatus(orderId: string, status: string) {
@@ -70,7 +84,7 @@ export default function AdminOrders() {
                       <span className="text-white text-sm font-mono">#{order.id.slice(0, 8).toUpperCase()}</span>
                     </td>
                     <td className="px-4 py-4 hidden md:table-cell">
-                      <span className="text-neutral-400 text-xs">{order.user_id?.slice(0, 8)}</span>
+                      <span className="text-neutral-400 text-xs">{customerNames[order.user_id] ?? order.user_id?.slice(0, 8)}</span>
                     </td>
                     <td className="px-4 py-4 hidden md:table-cell">
                       <span className="text-amber-400 text-sm">{formatPrice(order.total)}</span>

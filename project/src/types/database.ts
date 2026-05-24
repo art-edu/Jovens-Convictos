@@ -57,6 +57,10 @@ export interface Database {
         Args: Record<string, unknown>;
         Returns: Record<string, unknown>;
       };
+      increment_stock: {
+        Args: { p_product_id: string; p_quantity: number };
+        Returns: undefined;
+      };
     };
   };
 }

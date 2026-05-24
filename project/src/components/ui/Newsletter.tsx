@@ -16,7 +16,11 @@ export default function Newsletter() {
     const { error } = await supabase.from('newsletter_subscribers').insert({ email });
     setLoading(false);
     if (error) {
-      toast('Este e-mail já está cadastrado.', 'error');
+      if (error.message?.includes('duplicate') || error.code === '23505') {
+        toast('Este e-mail já está cadastrado.', 'error');
+      } else {
+        toast('Erro ao cadastrar. Tente novamente.', 'error');
+      }
     } else {
       toast('Cadastrado com sucesso! Bem-vindo.');
       setEmail('');

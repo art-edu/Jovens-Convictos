@@ -6,7 +6,7 @@ import { useCart } from '../contexts/CartContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import type { ShippingAddress } from '../types/database';
-import { formatPrice } from '../lib/utils';
+import { formatPrice, PLACEHOLDER_IMAGE } from '../lib/utils';
 
 type Step = 'address' | 'payment' | 'review';
 
@@ -325,7 +325,7 @@ export default function Checkout() {
                   {items.map(item => (
                     <div key={`${item.product.id}-${item.size}`} className="flex items-center gap-4 py-3 border-b border-neutral-900">
                       <div className="w-14 h-18 flex-shrink-0 overflow-hidden bg-neutral-900">
-                        <img src={item.product.images?.[0] ?? ''} alt="" className="w-full h-full object-cover" />
+                        <img src={item.product.images?.[0] ?? PLACEHOLDER_IMAGE} alt="" className="w-full h-full object-cover" />
                       </div>
                       <div className="flex-1">
                         <p className="text-white text-sm">{item.product.name}</p>

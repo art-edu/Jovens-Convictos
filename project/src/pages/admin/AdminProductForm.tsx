@@ -91,7 +91,7 @@ export default function AdminProductForm() {
     const removed = images[idx];
     setForm(prev => ({ ...prev, images: prev.images?.filter((_, i) => i !== idx) }));
 
-    if (removed && !removed.includes('pexels.com') && !removed.includes('catbox.moe')) {
+    if (removed && removed.startsWith(import.meta.env.VITE_SUPABASE_URL)) {
       try {
         await deleteProductImage(removed);
       } catch {

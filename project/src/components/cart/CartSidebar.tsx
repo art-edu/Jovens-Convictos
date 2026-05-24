@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Minus, Plus, ShoppingBag } from 'lucide-react';
-import { formatPrice } from '../../lib/utils';
+import { formatPrice, PLACEHOLDER_IMAGE } from '../../lib/utils';
 import { Link } from 'react-router-dom';
 import { useCart } from '../../contexts/CartContext';
 
@@ -58,7 +58,7 @@ export default function CartSidebar() {
                     <div key={`${item.product.id}-${item.size}-${item.color}`} className="px-6 py-4 border-b border-neutral-900 flex gap-4">
                       <div className="w-20 h-24 bg-neutral-900 flex-shrink-0 overflow-hidden">
                         <img
-                          src={item.product.images?.[0] || ''}
+                          src={item.product.images?.[0] || PLACEHOLDER_IMAGE}
                           alt={item.product.name}
                           className="w-full h-full object-cover"
                         />

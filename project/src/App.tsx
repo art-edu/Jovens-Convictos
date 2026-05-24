@@ -16,6 +16,7 @@ import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminProducts from './pages/admin/AdminProducts';
 import AdminProductForm from './pages/admin/AdminProductForm';
 import AdminOrders from './pages/admin/AdminOrders';
+import NotFound from './pages/NotFound';
 
 export default function App() {
   return (
@@ -40,6 +41,7 @@ export default function App() {
                 <Route path="/admin/produtos/novo" element={<AdminProductForm />} />
                 <Route path="/admin/produtos/editar/:id" element={<AdminProductForm />} />
                 <Route path="/admin/pedidos" element={<AdminOrders />} />
+                <Route path="*" element={<NotFound />} />
               </Routes>
             </div>
           </ToastProvider>
