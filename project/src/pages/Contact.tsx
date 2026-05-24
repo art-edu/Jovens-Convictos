@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Mail, MessageSquare, Instagram } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 import { useToast } from '../contexts/ToastContext';
 import Footer from '../components/layout/Footer';
 
@@ -16,7 +17,20 @@ export default function Contact() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-    await new Promise(r => setTimeout(r, 800));
+
+    const { error } = await supabase.from('contact_messages').insert({
+      name: form.name.trim(),
+      email: form.email.trim(),
+      subject: form.subject,
+      message: form.message.trim(),
+    });
+
+    if (error) {
+      toast('Erro ao enviar mensagem. Tente novamente mais tarde.', 'error');
+      setLoading(false);
+      return;
+    }
+
     toast('Mensagem enviada! Retornaremos em breve.');
     setForm({ name: '', email: '', subject: '', message: '' });
     setLoading(false);

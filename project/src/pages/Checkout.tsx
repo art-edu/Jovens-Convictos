@@ -217,6 +217,55 @@ export default function Checkout() {
                     <p className="text-amber-400 text-xs">Total com desconto: R$ {(total * 0.95).toFixed(2).replace('.', ',')}</p>
                   </div>
                 )}
+                {paymentMethod === 'card' && (
+                  <div className="mt-6 space-y-4">
+                    <div>
+                      <label className="text-neutral-400 text-xs tracking-[0.15em] uppercase block mb-2">Número do Cartão</label>
+                      <input
+                        name="cardNumber"
+                        value={card.number}
+                        onChange={handleCardChange}
+                        maxLength={19}
+                        placeholder="0000 0000 0000 0000"
+                        className="w-full bg-neutral-900 border border-neutral-700 text-white text-sm px-4 py-3.5 focus:outline-none focus:border-amber-400 transition-colors placeholder-neutral-600"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-neutral-400 text-xs tracking-[0.15em] uppercase block mb-2">Nome no Cartão</label>
+                      <input
+                        name="cardName"
+                        value={card.name}
+                        onChange={handleCardChange}
+                        placeholder="Como está impresso no cartão"
+                        className="w-full bg-neutral-900 border border-neutral-700 text-white text-sm px-4 py-3.5 focus:outline-none focus:border-amber-400 transition-colors placeholder-neutral-600"
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="text-neutral-400 text-xs tracking-[0.15em] uppercase block mb-2">Validade</label>
+                        <input
+                          name="cardExpiry"
+                          value={card.expiry}
+                          onChange={handleCardChange}
+                          maxLength={5}
+                          placeholder="MM/AA"
+                          className="w-full bg-neutral-900 border border-neutral-700 text-white text-sm px-4 py-3.5 focus:outline-none focus:border-amber-400 transition-colors placeholder-neutral-600"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-neutral-400 text-xs tracking-[0.15em] uppercase block mb-2">CVV</label>
+                        <input
+                          name="cardCvv"
+                          value={card.cvv}
+                          onChange={handleCardChange}
+                          maxLength={4}
+                          placeholder="123"
+                          className="w-full bg-neutral-900 border border-neutral-700 text-white text-sm px-4 py-3.5 focus:outline-none focus:border-amber-400 transition-colors placeholder-neutral-600"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
                 <div className="flex gap-4 mt-8">
                   <button onClick={() => setStep('address')} className="border border-neutral-700 text-neutral-400 text-xs tracking-widest uppercase px-8 py-4 hover:border-neutral-500 transition-colors">
                     Voltar
