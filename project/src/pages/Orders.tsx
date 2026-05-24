@@ -7,6 +7,7 @@ import { useAuth } from '../contexts/AuthContext';
 import type { Order, OrderItem } from '../types/database';
 import Footer from '../components/layout/Footer';
 import { formatPrice, formatDate, STATUS_LABELS, STATUS_COLORS } from '../lib/utils';
+import LoadingSpinner from '../components/ui/LoadingSpinner';
 
 interface OrderWithItems extends Order {
   items?: OrderItem[];
@@ -42,7 +43,7 @@ export default function Orders() {
   if (loading || authLoading) {
     return (
       <div className="bg-black min-h-screen pt-16 flex items-center justify-center">
-        <div className="w-8 h-8 border border-amber-400/30 border-t-amber-400 rounded-full animate-spin" />
+        <LoadingSpinner />
       </div>
     );
   }

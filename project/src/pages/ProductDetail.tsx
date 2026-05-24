@@ -9,6 +9,7 @@ import { useToast } from '../contexts/ToastContext';
 import ProductCard from '../components/product/ProductCard';
 import Footer from '../components/layout/Footer';
 import { formatPrice, PLACEHOLDER_IMAGE } from '../lib/utils';
+import LoadingSpinner from '../components/ui/LoadingSpinner';
 
 export default function ProductDetail() {
   const { slug } = useParams<{ slug: string }>();
@@ -68,7 +69,7 @@ export default function ProductDetail() {
   if (loading) {
     return (
       <div className="bg-black min-h-screen pt-16 flex items-center justify-center">
-        <div className="w-8 h-8 border border-amber-400/30 border-t-amber-400 rounded-full animate-spin" />
+        <LoadingSpinner />
       </div>
     );
   }

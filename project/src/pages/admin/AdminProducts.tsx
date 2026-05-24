@@ -8,12 +8,15 @@ import { useToast } from '../../contexts/ToastContext';
 import type { Product } from '../../types/database';
 import { formatPrice } from '../../lib/utils';
 
+const PAGE_SIZE = 10;
+
 export default function AdminProducts() {
   const { isAdmin, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(0);
 
   useEffect(() => {
     if (!authLoading && !isAdmin) navigate('/');
@@ -29,6 +32,9 @@ export default function AdminProducts() {
     setProducts(data ?? []);
     setLoading(false);
   }
+
+  const totalPages = Math.max(1, Math.ceil(products.length / PAGE_SIZE));
+  const paginatedProducts = products.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
 
   async function toggleActive(product: Product) {
     await supabase.from('products').update({ active: !product.active }).eq('id', product.id);
@@ -69,72 +75,105 @@ export default function AdminProducts() {
             ))}
           </div>
         ) : (
-          <div className="border border-neutral-800">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-neutral-800">
-                  <th className="text-left px-4 py-3 text-neutral-500 text-xs tracking-[0.15em] uppercase font-normal">Produto</th>
-                  <th className="text-left px-4 py-3 text-neutral-500 text-xs tracking-[0.15em] uppercase font-normal hidden md:table-cell">Categoria</th>
-                  <th className="text-left px-4 py-3 text-neutral-500 text-xs tracking-[0.15em] uppercase font-normal hidden md:table-cell">Preço</th>
-                  <th className="text-left px-4 py-3 text-neutral-500 text-xs tracking-[0.15em] uppercase font-normal hidden md:table-cell">Status</th>
-                  <th className="px-4 py-3 text-neutral-500 text-xs tracking-[0.15em] uppercase font-normal text-right">Ações</th>
-                </tr>
-              </thead>
-              <tbody>
-                {products.map((product, i) => (
-                  <motion.tr
-                    key={product.id}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: i * 0.03 }}
-                    className="border-b border-neutral-900 hover:bg-neutral-950 transition-colors"
-                  >
-                    <td className="px-4 py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-12 bg-neutral-900 flex-shrink-0 overflow-hidden">
-                          {product.images?.[0] && (
-                            <img src={product.images[0]} alt="" className="w-full h-full object-cover" />
-                          )}
+          <>
+            <div className="border border-neutral-800">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-neutral-800">
+                    <th className="text-left px-4 py-3 text-neutral-500 text-xs tracking-[0.15em] uppercase font-normal">Produto</th>
+                    <th className="text-left px-4 py-3 text-neutral-500 text-xs tracking-[0.15em] uppercase font-normal hidden md:table-cell">Categoria</th>
+                    <th className="text-left px-4 py-3 text-neutral-500 text-xs tracking-[0.15em] uppercase font-normal hidden md:table-cell">Preço</th>
+                    <th className="text-left px-4 py-3 text-neutral-500 text-xs tracking-[0.15em] uppercase font-normal hidden md:table-cell">Status</th>
+                    <th className="px-4 py-3 text-neutral-500 text-xs tracking-[0.15em] uppercase font-normal text-right">Ações</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {paginatedProducts.map((product, i) => (
+                    <motion.tr
+                      key={product.id}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: i * 0.03 }}
+                      className="border-b border-neutral-900 hover:bg-neutral-950 transition-colors"
+                    >
+                      <td className="px-4 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-12 bg-neutral-900 flex-shrink-0 overflow-hidden">
+                            {product.images?.[0] && (
+                              <img src={product.images[0]} alt="" className="w-full h-full object-cover" />
+                            )}
+                          </div>
+                          <span className="text-white text-sm">{product.name}</span>
                         </div>
-                        <span className="text-white text-sm">{product.name}</span>
-                      </div>
-                    </td>
-                    <td className="px-4 py-4 hidden md:table-cell">
-                      <span className="text-neutral-400 text-xs tracking-widest uppercase">{product.category}</span>
-                    </td>
-                    <td className="px-4 py-4 hidden md:table-cell">
-                      <span className="text-amber-400 text-sm">{formatPrice(product.price)}</span>
-                    </td>
-                    <td className="px-4 py-4 hidden md:table-cell">
-                      <button
-                        onClick={() => toggleActive(product)}
-                        className={`text-xs tracking-widest uppercase px-3 py-1 border transition-colors ${
-                          product.active
-                            ? 'border-green-800 text-green-400 hover:bg-red-900/20 hover:border-red-800 hover:text-red-400'
-                            : 'border-neutral-700 text-neutral-500 hover:border-green-800 hover:text-green-400'
-                        }`}
-                      >
-                        {product.active ? 'Ativo' : 'Inativo'}
-                      </button>
-                    </td>
-                    <td className="px-4 py-4 text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <Link to={`/produto/${product.slug}`} className="text-neutral-600 hover:text-white transition-colors p-1.5">
-                          <Eye size={14} />
-                        </Link>
-                        <Link to={`/admin/produtos/editar/${product.id}`} className="text-neutral-600 hover:text-amber-400 transition-colors p-1.5">
-                          <Pencil size={14} />
-                        </Link>
-                        <button onClick={() => deleteProduct(product.id)} className="text-neutral-600 hover:text-red-400 transition-colors p-1.5">
-                          <Trash2 size={14} />
+                      </td>
+                      <td className="px-4 py-4 hidden md:table-cell">
+                        <span className="text-neutral-400 text-xs tracking-widest uppercase">{product.category}</span>
+                      </td>
+                      <td className="px-4 py-4 hidden md:table-cell">
+                        <span className="text-amber-400 text-sm">{formatPrice(product.price)}</span>
+                      </td>
+                      <td className="px-4 py-4 hidden md:table-cell">
+                        <button
+                          onClick={() => toggleActive(product)}
+                          className={`text-xs tracking-widest uppercase px-3 py-1 border transition-colors ${
+                            product.active
+                              ? 'border-green-800 text-green-400 hover:bg-red-900/20 hover:border-red-800 hover:text-red-400'
+                              : 'border-neutral-700 text-neutral-500 hover:border-green-800 hover:text-green-400'
+                          }`}
+                        >
+                          {product.active ? 'Ativo' : 'Inativo'}
                         </button>
-                      </div>
-                    </td>
-                  </motion.tr>
+                      </td>
+                      <td className="px-4 py-4 text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <Link to={`/produto/${product.slug}`} className="text-neutral-600 hover:text-white transition-colors p-1.5">
+                            <Eye size={14} />
+                          </Link>
+                          <Link to={`/admin/produtos/editar/${product.id}`} className="text-neutral-600 hover:text-amber-400 transition-colors p-1.5">
+                            <Pencil size={14} />
+                          </Link>
+                          <button onClick={() => deleteProduct(product.id)} className="text-neutral-600 hover:text-red-400 transition-colors p-1.5">
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
+                      </td>
+                    </motion.tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            {totalPages > 1 && (
+              <div className="flex items-center justify-center gap-2 mt-8">
+                <button
+                  onClick={() => setPage(p => Math.max(0, p - 1))}
+                  disabled={page === 0}
+                  className="px-4 py-2 text-xs tracking-widest uppercase border border-neutral-700 text-neutral-400 hover:text-white hover:border-neutral-500 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                >
+                  Anterior
+                </button>
+                {Array.from({ length: totalPages }, (_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setPage(i)}
+                    className={`w-8 h-8 text-xs border transition-colors ${
+                      i === page
+                        ? 'bg-amber-400 text-black border-amber-400'
+                        : 'border-neutral-700 text-neutral-400 hover:border-neutral-500'
+                    }`}
+                  >
+                    {i + 1}
+                  </button>
                 ))}
-              </tbody>
-            </table>
-          </div>
+                <button
+                  onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))}
+                  disabled={page >= totalPages - 1}
+                  className="px-4 py-2 text-xs tracking-widest uppercase border border-neutral-700 text-neutral-400 hover:text-white hover:border-neutral-500 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                >
+                  Próximo
+                </button>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
