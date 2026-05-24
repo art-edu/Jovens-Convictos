@@ -52,10 +52,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   async function signUp(email: string, password: string, fullName: string) {
     const { data, error } = await supabase.auth.signUp({ email, password });
-    if (!error && data.user) {
-      await supabase.from('profiles').insert({ id: data.user.id, full_name: fullName });
-    }
-    return { error };
+    if (error) return { error };
+    if (!data.user) return { error: new Error('Erro ao criar usuário') };
+
+    const { error: profileError } = await supabase.from('profiles').insert({
+      id: data.user.id,
+      full_name: fullName,
+    });
+
+    return { error: profileError };
   }
 
   async function signIn(email: string, password: string) {

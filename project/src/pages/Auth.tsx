@@ -52,7 +52,7 @@ export default function Auth() {
     if (mode === 'login') {
       const { error } = await signIn(sanitizedEmail, password);
       if (error) {
-        toast('E-mail ou senha inválidos', 'error');
+        toast(error.message || 'E-mail ou senha inválidos', 'error');
       } else {
         toast('Bem-vindo de volta!');
         navigate('/');
@@ -70,7 +70,7 @@ export default function Auth() {
       }
       const { error } = await signUp(sanitizedEmail, password, sanitizedFullName);
       if (error) {
-        toast(GENERIC_ERROR, 'error');
+        toast(error.message || GENERIC_ERROR, 'error');
       } else {
         toast('Conta criada! Faça login para continuar.');
         setMode('login');
