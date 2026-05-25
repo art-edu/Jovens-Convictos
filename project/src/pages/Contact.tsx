@@ -26,7 +26,7 @@ export default function Contact() {
     <div className="bg-black min-h-screen pt-16">
       <div className="py-20 px-6 border-b border-neutral-900 text-center">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-          <p className="text-amber-400 text-xs tracking-[0.4em] uppercase mb-4">Fale Conosco</p>
+          <p className="text-blue-300 text-xs tracking-[0.4em] uppercase mb-4">Fale Conosco</p>
           <h1 className="font-serif text-white text-4xl tracking-wide">Contato</h1>
         </motion.div>
       </div>
@@ -42,17 +42,17 @@ export default function Contact() {
             <div className="space-y-8">
               {[
                 { icon: Mail, label: 'E-mail', value: 'jovensiba7@gmai.com'},
-                { icon: MessageSquare, label: 'WhatsApp', value: '+55 (11) 99999-9999', href: 'https://wa.me/5511999999999' },
+                { icon: MessageSquare, label: 'WhatsApp - Artur Padua', value: '+55 (89) 99421-8604', href: 'https://wa.me/5589994218604' },
               ].map(item => {
                 const Icon = item.icon;
                 return (
                   <a key={item.label} href={item.href} className="flex items-start gap-4 group">
-                    <div className="w-10 h-10 border border-neutral-800 flex items-center justify-center group-hover:border-amber-400 transition-colors">
-                      <Icon size={16} className="text-neutral-500 group-hover:text-amber-400 transition-colors" />
+                    <div className="w-10 h-10 border border-neutral-800 flex items-center justify-center group-hover:border-blue-300 transition-colors">
+                      <Icon size={16} className="text-neutral-500 group-hover:text-blue-300 transition-colors" />
                     </div>
                     <div>
                       <p className="text-neutral-500 text-xs tracking-[0.15em] uppercase mb-1">{item.label}</p>
-                      <p className="text-white text-sm group-hover:text-amber-400 transition-colors">{item.value}</p>
+                      <p className="text-white text-sm group-hover:text-blue-300 transition-colors">{item.value}</p>
                     </div>
                   </a>
                 );
@@ -65,28 +65,26 @@ export default function Contact() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="text-neutral-400 text-xs tracking-[0.15em] uppercase block mb-2">Nome</label>
-                  <input name="name" value={form.name} onChange={handleChange} required className="w-full bg-neutral-900 border border-neutral-700 text-white text-sm px-4 py-4 focus:outline-none focus:border-amber-400 transition-colors placeholder-neutral-600" placeholder="Seu nome" />
+                  <input name="name" value={form.name} onChange={handleChange} required className="w-full bg-neutral-900 border border-neutral-700 text-white text-sm px-4 py-4 focus:outline-none focus:border-blue-300 transition-colors placeholder-neutral-600" placeholder="Seu nome" />
                 </div>
                 <div>
                   <label className="text-neutral-400 text-xs tracking-[0.15em] uppercase block mb-2">E-mail</label>
-                  <input name="email" type="email" value={form.email} onChange={handleChange} required className="w-full bg-neutral-900 border border-neutral-700 text-white text-sm px-4 py-4 focus:outline-none focus:border-amber-400 transition-colors placeholder-neutral-600" placeholder="seu@email.com" />
+                  <input name="email" type="email" value={form.email} onChange={handleChange} required className="w-full bg-neutral-900 border border-neutral-700 text-white text-sm px-4 py-4 focus:outline-none focus:border-blue-300 transition-colors placeholder-neutral-600" placeholder="seu@email.com" />
                 </div>
               </div>
               <div>
                 <label className="text-neutral-400 text-xs tracking-[0.15em] uppercase block mb-2">Assunto</label>
-                <select name="subject" value={form.subject} onChange={handleChange} required className="w-full bg-neutral-900 border border-neutral-700 text-white text-sm px-4 py-4 focus:outline-none focus:border-amber-400 transition-colors">
+                <select name="subject" value={form.subject} onChange={handleChange} required className="w-full bg-neutral-900 border border-neutral-700 text-white text-sm px-4 py-4 focus:outline-none focus:border-blue-300 transition-colors">
                   <option value="">Selecione um assunto</option>
                   <option>Dúvida sobre produto</option>
-                  <option>Rastreamento de pedido</option>
-                  <option>Troca e devolução</option>
                   <option>Outro</option>
                 </select>
               </div>
               <div>
                 <label className="text-neutral-400 text-xs tracking-[0.15em] uppercase block mb-2">Mensagem</label>
-                <textarea name="message" value={form.message} onChange={handleChange} required rows={6} className="w-full bg-neutral-900 border border-neutral-700 text-white text-sm px-4 py-4 focus:outline-none focus:border-amber-400 transition-colors resize-none placeholder-neutral-600" placeholder="Sua mensagem..." />
+                <textarea name="message" value={form.message} onChange={handleChange} required rows={6} className="w-full bg-neutral-900 border border-neutral-700 text-white text-sm px-4 py-4 focus:outline-none focus:border-blue-300 transition-colors resize-none placeholder-neutral-600" placeholder="Sua mensagem..." />
               </div>
-              <button type="submit" disabled={loading} className="w-full bg-amber-400 text-black text-xs tracking-[0.25em] uppercase py-5 hover:bg-amber-300 transition-colors disabled:opacity-50">
+              <button type="submit" disabled={loading} className="w-full bg-blue-300 text-black text-xs tracking-[0.25em] uppercase py-5 hover:bg-blue-300 transition-colors disabled:opacity-50">
                 {loading ? 'Enviando...' : 'Enviar Mensagem'}
               </button>
             </form>

@@ -121,7 +121,7 @@ export default function Checkout() {
     <div className="bg-black min-h-screen pt-16">
       <div className="max-w-screen-lg mx-auto px-6 py-16">
         <div className="text-center mb-12">
-          <p className="text-amber-400 text-xs tracking-[0.4em] uppercase mb-3">Finalizar</p>
+          <p className="text-blue-300 text-xs tracking-[0.4em] uppercase mb-3">Finalizar</p>
           <h1 className="font-serif text-white text-3xl tracking-wide">Checkout</h1>
         </div>
 
@@ -129,17 +129,17 @@ export default function Checkout() {
         <div className="flex items-center justify-center gap-0 mb-12">
           {steps.map((s, i) => (
             <div key={s} className="flex items-center">
-              <div className={`flex items-center gap-2 ${step === s ? 'text-white' : steps.indexOf(step) > i ? 'text-amber-400' : 'text-neutral-600'}`}>
+              <div className={`flex items-center gap-2 ${step === s ? 'text-white' : steps.indexOf(step) > i ? 'text-blue-300' : 'text-neutral-600'}`}>
                 <div className={`w-6 h-6 rounded-full border flex items-center justify-center text-xs ${
                   step === s ? 'border-white bg-white text-black' :
-                  steps.indexOf(step) > i ? 'border-amber-400 bg-amber-400 text-black' :
+                  steps.indexOf(step) > i ? 'border-blue-300 bg-blue-300 text-black' :
                   'border-neutral-700'
                 }`}>
                   {steps.indexOf(step) > i ? <Check size={10} /> : i + 1}
                 </div>
                 <span className="text-xs tracking-[0.15em] uppercase hidden sm:block">{stepLabels[s]}</span>
               </div>
-              {i < steps.length - 1 && <div className={`w-16 h-px mx-3 ${steps.indexOf(step) > i ? 'bg-amber-400' : 'bg-neutral-800'}`} />}
+              {i < steps.length - 1 && <div className={`w-16 h-px mx-3 ${steps.indexOf(step) > i ? 'bg-blue-300' : 'bg-neutral-800'}`} />}
             </div>
           ))}
         </div>
@@ -173,7 +173,7 @@ export default function Checkout() {
                 </div>
                 <button
                   onClick={() => validateAddress() && setStep('payment')}
-                  className="mt-8 bg-amber-400 text-black text-xs tracking-[0.2em] uppercase px-12 py-4 hover:bg-amber-300 transition-colors"
+                  className="mt-8 bg-blue-300 text-black text-xs tracking-[0.2em] uppercase px-12 py-4 hover:bg-amber-300 transition-colors"
                 >
                   Continuar
                 </button>
@@ -185,7 +185,7 @@ export default function Checkout() {
                 <h2 className="text-white text-sm tracking-[0.2em] uppercase mb-6">Método de Pagamento</h2>
                 <div className="space-y-3">
                   {[
-                    { value: 'pix', label: 'PIX', desc: 'Aprovação instantânea — 5% de desconto', icon: QrCode },
+                    { value: 'pix', label: 'PIX', desc: 'Aprovação instantânea', icon: QrCode },
                     { value: 'card', label: 'Cartão de Crédito', desc: 'Parcelamento em até 12x', icon: CreditCard },
                   ].map(opt => {
                     const Icon = opt.icon;
@@ -195,18 +195,18 @@ export default function Checkout() {
                         onClick={() => setPaymentMethod(opt.value as 'pix' | 'card')}
                         className={`w-full flex items-center gap-4 p-5 border transition-colors text-left ${
                           paymentMethod === opt.value
-                            ? 'border-amber-400 bg-amber-400/5'
+                            ? 'border-blue-300 bg-blue-300/5'
                             : 'border-neutral-800 hover:border-neutral-600'
                         }`}
                       >
-                        <div className={`w-10 h-10 flex items-center justify-center ${paymentMethod === opt.value ? 'text-amber-400' : 'text-neutral-600'}`}>
+                        <div className={`w-10 h-10 flex items-center justify-center ${paymentMethod === opt.value ? 'text-blue-300' : 'text-neutral-600'}`}>
                           <Icon size={20} />
                         </div>
                         <div>
                           <p className="text-white text-sm tracking-wide">{opt.label}</p>
                           <p className="text-neutral-500 text-xs mt-0.5">{opt.desc}</p>
                         </div>
-                        <div className={`ml-auto w-4 h-4 rounded-full border-2 ${paymentMethod === opt.value ? 'border-amber-400 bg-amber-400' : 'border-neutral-600'}`} />
+                        <div className={`ml-auto w-4 h-4 rounded-full border-2 ${paymentMethod === opt.value ? 'border-blue-300 bg-blue-300' : 'border-neutral-600'}`} />
                       </button>
                     );
                   })}
@@ -214,14 +214,13 @@ export default function Checkout() {
                 {paymentMethod === 'pix' && (
                   <div className="mt-6 p-5 bg-neutral-900 border border-neutral-800">
                     <p className="text-neutral-400 text-xs tracking-wide mb-2">Após confirmar, você receberá a chave PIX.</p>
-                    <p className="text-amber-400 text-xs">Total com desconto: R$ {(total * 0.95).toFixed(2).replace('.', ',')}</p>
                   </div>
                 )}
                 <div className="flex gap-4 mt-8">
                   <button onClick={() => setStep('address')} className="border border-neutral-700 text-neutral-400 text-xs tracking-widest uppercase px-8 py-4 hover:border-neutral-500 transition-colors">
                     Voltar
                   </button>
-                  <button onClick={() => setStep('review')} className="bg-amber-400 text-black text-xs tracking-[0.2em] uppercase px-12 py-4 hover:bg-amber-300 transition-colors">
+                  <button onClick={() => setStep('review')} className="bg-blue-300 text-black text-xs tracking-[0.2em] uppercase px-12 py-4 hover:bg-blue-300 transition-colors">
                     Continuar
                   </button>
                 </div>
@@ -242,7 +241,7 @@ export default function Checkout() {
                         {item.size && <p className="text-neutral-500 text-xs mt-0.5">Tam: {item.size}</p>}
                         <p className="text-neutral-500 text-xs">Qtd: {item.quantity}</p>
                       </div>
-                      <p className="text-amber-400 text-sm">R$ {(item.product.price * item.quantity).toFixed(2).replace('.', ',')}</p>
+                      <p className="text-blue-300 text-sm">R$ {(item.product.price * item.quantity).toFixed(2).replace('.', ',')}</p>
                     </div>
                   ))}
                 </div>
@@ -257,7 +256,7 @@ export default function Checkout() {
                   <button
                     onClick={handleOrder}
                     disabled={loading || !user}
-                    className="flex-1 bg-amber-400 text-black text-xs tracking-[0.2em] uppercase py-4 hover:bg-amber-300 transition-colors disabled:opacity-50"
+                    className="flex-1 bg-blue-300 text-black text-xs tracking-[0.2em] uppercase py-4 hover:bg-blue-300 transition-colors disabled:opacity-50"
                   >
                     {!user ? 'Faça login para continuar' : loading ? 'Processando...' : 'Confirmar Pedido'}
                   </button>
@@ -284,10 +283,7 @@ export default function Checkout() {
                   <span className="text-white text-xs">R$ {total.toFixed(2).replace('.', ',')}</span>
                 </div>
                 {paymentMethod === 'pix' && (
-                  <div className="flex justify-between mb-2">
-                    <span className="text-amber-400 text-xs">Desconto PIX (5%)</span>
-                    <span className="text-amber-400 text-xs">-R$ {displayDiscount.toFixed(2).replace('.', ',')}</span>
-                  </div>
+                  <div className="flex justify-between mb-2"></div>
                 )}
                 <div className="flex justify-between mt-4 pt-4 border-t border-neutral-800">
                   <span className="text-white text-xs tracking-[0.15em] uppercase">Total</span>

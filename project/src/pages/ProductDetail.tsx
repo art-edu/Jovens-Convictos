@@ -151,7 +151,7 @@ export default function ProductDetail() {
           >
             <p className="text-neutral-500 text-xs tracking-[0.25em] uppercase mb-3">{product.category}</p>
             <h1 className="font-serif text-white text-3xl md:text-4xl tracking-wide mb-4">{product.name}</h1>
-            <p className="text-amber-400 text-2xl font-light mb-8">
+            <p className="text-blue-300 text-2xl font-light mb-8">
               R$ {product.price.toFixed(2).replace('.', ',')}
             </p>
 
@@ -164,7 +164,7 @@ export default function ProductDetail() {
                 <div className="flex items-center justify-between mb-4">
                   <span className="text-white text-xs tracking-[0.2em] uppercase">Tamanho</span>
                   {selectedSize && (
-                    <span className="text-amber-400 text-xs tracking-wide">{selectedSize}</span>
+                    <span className="text-blue-300 text-xs tracking-wide">{selectedSize}</span>
                   )}
                 </div>
                 <div className="flex flex-wrap gap-2">
@@ -192,7 +192,7 @@ export default function ProductDetail() {
             ) : (
               <button
                 onClick={handleAddToCart}
-                className="w-full bg-amber-400 text-black text-xs tracking-[0.25em] uppercase py-5 flex items-center justify-center gap-3 hover:bg-amber-300 transition-colors duration-300 mb-4"
+                className="w-full bg-blue-300 text-black text-xs tracking-[0.25em] uppercase py-5 flex items-center justify-center gap-3 hover:bg-amber-300 transition-colors duration-300 mb-4"
               >
                 <ShoppingBag size={16} />
                 Adicionar ao Carrinho
@@ -218,7 +218,7 @@ export default function ProductDetail() {
         <section className="py-20 px-6 border-t border-neutral-900">
           <div className="max-w-screen-xl mx-auto">
             <div className="text-center mb-12">
-              <p className="text-amber-400 text-xs tracking-[0.35em] uppercase mb-3">Você Também Pode Gostar</p>
+              <p className="text-blue-300 text-xs tracking-[0.35em] uppercase mb-3">Você Também Pode Gostar</p>
               <h2 className="font-serif text-white text-2xl tracking-wide">Produtos Relacionados</h2>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
