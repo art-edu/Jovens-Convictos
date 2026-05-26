@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
@@ -11,17 +11,12 @@ import { formatPrice, formatDate, STATUSES, STATUS_LABELS, STATUS_COLORS } from 
 const PAGE_SIZE = 10;
 
 export default function AdminOrders() {
-  const { isAdmin, loading: authLoading } = useAuth();
-  const navigate = useNavigate();
+  const { isAdmin } = useAuth();
   const { toast } = useToast();
   const [orders, setOrders] = useState<Order[]>([]);
   const [customerNames, setCustomerNames] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(0);
-
-  useEffect(() => {
-    if (!authLoading && !isAdmin) navigate('/');
-  }, [isAdmin, authLoading, navigate]);
 
   useEffect(() => {
     if (!isAdmin) return;

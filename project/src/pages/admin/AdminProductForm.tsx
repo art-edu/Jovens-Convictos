@@ -2,7 +2,6 @@ import { useEffect, useState, useRef } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { X, Upload, Loader2 } from 'lucide-react';
 import { supabase, uploadProductImage, deleteProductImage } from '../../lib/supabase';
-import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../../contexts/ToastContext';
 import type { Product } from '../../types/database';
 import { CATEGORY_VALUES } from '../../lib/utils';
@@ -15,17 +14,12 @@ const empty: Partial<Product> = {
 export default function AdminProductForm() {
   const { id } = useParams<{ id: string }>();
   const isEdit = Boolean(id);
-  const { isAdmin, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [form, setForm] = useState<Partial<Product>>(empty);
   const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    if (!authLoading && !isAdmin) navigate('/');
-  }, [isAdmin, authLoading, navigate]);
 
   useEffect(() => {
     if (isEdit && id) {

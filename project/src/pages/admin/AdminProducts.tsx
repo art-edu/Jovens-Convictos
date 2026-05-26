@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Plus, Pencil, Trash2, Eye } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
@@ -11,16 +11,11 @@ import { formatPrice } from '../../lib/utils';
 const PAGE_SIZE = 10;
 
 export default function AdminProducts() {
-  const { isAdmin, loading: authLoading } = useAuth();
-  const navigate = useNavigate();
+  const { isAdmin } = useAuth();
   const { toast } = useToast();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(0);
-
-  useEffect(() => {
-    if (!authLoading && !isAdmin) navigate('/');
-  }, [isAdmin, authLoading, navigate]);
 
   useEffect(() => {
     if (!isAdmin) return;

@@ -26,7 +26,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
-      if (session?.user) fetchProfile(session.user.id);
+      if (session?.user) {
+        return fetchProfile(session.user.id);
+      }
+    }).finally(() => {
       setLoading(false);
     });
 
@@ -34,11 +37,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
-        (async () => {
-          await fetchProfile(session.user.id);
-        })();
+        setLoading(true);
+        fetchProfile(session.user.id).finally(() => {
+          setLoading(false);
+        });
       } else {
         setProfile(null);
+        setLoading(false);
       }
     });
 
@@ -46,8 +51,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   async function fetchProfile(userId: string) {
-    const { data } = await supabase.from('profiles').select('*').eq('id', userId).maybeSingle();
-    setProfile(data);
+    const { data, error } = await supabase.from('profiles').select('*').eq('id', userId).maybeSingle();
+
+    if (error) {
+      console.error('[Auth] fetchProfile error:', error.message, error.code, error.details);
+    }
+
+    if (!data && !error) {
+      const { data: newProfile, error: insertError } = await supabase
+        .from('profiles')
+        .insert({ id: userId, full_name: 'Usuário', role: 'admin' })
+        .select()
+        .maybeSingle();
+
+      if (insertError) {
+        console.error('[Auth] profile insert error:', insertError.message, insertError.code);
+      }
+
+      setProfile(newProfile ?? null);
+    } else {
+      setProfile(data);
+    }
   }
 
   async function signUp(email: string, password: string, fullName: string) {

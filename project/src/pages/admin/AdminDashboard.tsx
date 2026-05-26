@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Package, ShoppingBag, Users, TrendingUp, Plus } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
@@ -13,13 +13,8 @@ interface Stats {
 }
 
 export default function AdminDashboard() {
-  const { isAdmin, loading: authLoading } = useAuth();
-  const navigate = useNavigate();
+  const { isAdmin } = useAuth();
   const [stats, setStats] = useState<Stats>({ totalProducts: 0, totalOrders: 0, pendingOrders: 0, totalRevenue: 0 });
-
-  useEffect(() => {
-    if (!authLoading && !isAdmin) navigate('/');
-  }, [isAdmin, authLoading, navigate]);
 
   useEffect(() => {
     if (!isAdmin) return;

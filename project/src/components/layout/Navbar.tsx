@@ -136,6 +136,13 @@ export default function Navbar() {
               ))}
               {user ? (
                 <>
+                  {isAdmin && (
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.45 }}>
+                      <Link to="/admin" onClick={() => setMenuOpen(false)} className="text-amber-400 text-sm tracking-widest uppercase hover:text-amber-300 transition-colors">
+                        Admin
+                      </Link>
+                    </motion.div>
+                  )}
                   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}>
                     <Link to="/pedidos" onClick={() => setMenuOpen(false)} className="text-neutral-400 text-sm tracking-widest uppercase hover:text-white transition-colors">
                       Minha Conta

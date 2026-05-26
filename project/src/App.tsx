@@ -12,6 +12,7 @@ import Checkout from './pages/Checkout';
 import Orders from './pages/Orders';
 import About from './pages/About';
 import Contact from './pages/Contact';
+import AdminRoute from './components/admin/AdminRoute';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminProducts from './pages/admin/AdminProducts';
 import AdminProductForm from './pages/admin/AdminProductForm';
@@ -36,11 +37,11 @@ export default function App() {
                 <Route path="/pedidos" element={<Orders />} />
                 <Route path="/sobre" element={<About />} />
                 <Route path="/contato" element={<Contact />} />
-                <Route path="/admin" element={<AdminDashboard />} />
-                <Route path="/admin/produtos" element={<AdminProducts />} />
-                <Route path="/admin/produtos/novo" element={<AdminProductForm />} />
-                <Route path="/admin/produtos/editar/:id" element={<AdminProductForm />} />
-                <Route path="/admin/pedidos" element={<AdminOrders />} />
+                <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+                <Route path="/admin/produtos" element={<AdminRoute><AdminProducts /></AdminRoute>} />
+                <Route path="/admin/produtos/novo" element={<AdminRoute><AdminProductForm /></AdminRoute>} />
+                <Route path="/admin/produtos/editar/:id" element={<AdminRoute><AdminProductForm /></AdminRoute>} />
+                <Route path="/admin/pedidos" element={<AdminRoute><AdminOrders /></AdminRoute>} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </div>
