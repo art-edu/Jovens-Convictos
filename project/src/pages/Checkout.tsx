@@ -8,52 +8,19 @@ import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import type { ShippingAddress } from '../types/database';
 
-type Step = 'address' | 'payment' | 'review';
+type Step = 'payment' | 'review';
 
-const BRAZILIAN_STATES = [
-  'AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA',
-  'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN',
-  'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO',
-];
-
-const ZIP_REGEX = /^\d{5}-?\d{3}$/;
 
 export default function Checkout() {
   const { items, total, clearCart } = useCart();
   const { user, session } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
-  const [step, setStep] = useState<Step>('address');
+  const [step, setStep] = useState<Step>('payment');
   const [paymentMethod, setPaymentMethod] = useState<'pix' | 'card'>('pix');
   const [loading, setLoading] = useState(false);
-  const [address, setAddress] = useState<ShippingAddress>({
-    full_name: '', street: '', number: '', complement: '',
-    neighborhood: '', city: '', state: '', zip: '',
-  });
   const [serverTotal, setServerTotal] = useState<number | null>(null);
 
-  function handleAddressChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setAddress(prev => ({ ...prev, [e.target.name]: e.target.value }));
-  }
-
-  function validateAddress() {
-    const required = ['full_name', 'street', 'number', 'neighborhood', 'city', 'state', 'zip'] as const;
-    for (const k of required) {
-      if (!(address[k] ?? '').trim()) {
-        toast('Preencha todos os campos obrigatórios', 'error');
-        return false;
-      }
-    }
-    if (address.zip && !ZIP_REGEX.test(address.zip)) {
-      toast('CEP inválido', 'error');
-      return false;
-    }
-    if (address.state && !BRAZILIAN_STATES.includes(address.state.toUpperCase())) {
-      toast('Estado inválido', 'error');
-      return false;
-    }
-    return true;
-  }
 
   async function handleOrder() {
     if (!user || !session) { navigate('/auth'); return; }
@@ -76,7 +43,6 @@ export default function Checkout() {
             color: item.color,
           })),
           payment_method: paymentMethod,
-          shipping_address: address,
         }),
       });
 
@@ -112,8 +78,8 @@ export default function Checkout() {
     );
   }
 
-  const steps: Step[] = ['address', 'payment', 'review'];
-  const stepLabels = { address: 'Endereço', payment: 'Pagamento', review: 'Revisão' };
+  const steps: Step[] = ['payment', 'review'];
+  const stepLabels = { payment: 'Pagamento', review: 'Revisão' };
   const displayTotal = serverTotal ?? (paymentMethod === 'pix' ? total * 0.95 : total);
   const displayDiscount = paymentMethod === 'pix' ? total * 0.05 : 0;
 
@@ -146,40 +112,7 @@ export default function Checkout() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
           <div className="lg:col-span-2">
-            {step === 'address' && (
-              <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
-                <h2 className="text-white text-sm tracking-[0.2em] uppercase mb-6">Endereço de Entrega</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {[
-                    { name: 'full_name', label: 'Nome Completo', cols: 2 },
-                    { name: 'zip', label: 'CEP', cols: 1 },
-                    { name: 'street', label: 'Rua', cols: 2 },
-                    { name: 'number', label: 'Número', cols: 1 },
-                    { name: 'complement', label: 'Complemento', cols: 1 },
-                    { name: 'neighborhood', label: 'Bairro', cols: 1 },
-                    { name: 'city', label: 'Cidade', cols: 1 },
-                    { name: 'state', label: 'Estado', cols: 1 },
-                  ].map(field => (
-                    <div key={field.name} className={field.cols === 2 ? 'md:col-span-2' : ''}>
-                      <label className="text-neutral-400 text-xs tracking-[0.15em] uppercase block mb-2">{field.label}</label>
-                      <input
-                        name={field.name}
-                        value={address[field.name as keyof ShippingAddress] ?? ''}
-                        onChange={handleAddressChange}
-                        className="w-full bg-neutral-900 border border-neutral-700 text-white text-sm px-4 py-3.5 focus:outline-none focus:border-amber-400 transition-colors"
-                      />
-                    </div>
-                  ))}
-                </div>
-                <button
-                  onClick={() => validateAddress() && setStep('payment')}
-                  className="mt-8 bg-blue-300 text-black text-xs tracking-[0.2em] uppercase px-12 py-4 hover:bg-amber-300 transition-colors"
-                >
-                  Continuar
-                </button>
-              </motion.div>
-            )}
-
+            
             {step === 'payment' && (
               <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
                 <h2 className="text-white text-sm tracking-[0.2em] uppercase mb-6">Método de Pagamento</h2>
@@ -217,9 +150,7 @@ export default function Checkout() {
                   </div>
                 )}
                 <div className="flex gap-4 mt-8">
-                  <button onClick={() => setStep('address')} className="border border-neutral-700 text-neutral-400 text-xs tracking-widest uppercase px-8 py-4 hover:border-neutral-500 transition-colors">
-                    Voltar
-                  </button>
+                
                   <button onClick={() => setStep('review')} className="bg-blue-300 text-black text-xs tracking-[0.2em] uppercase px-12 py-4 hover:bg-blue-300 transition-colors">
                     Continuar
                   </button>
@@ -246,7 +177,6 @@ export default function Checkout() {
                   ))}
                 </div>
                 <div className="bg-neutral-900 p-4 mb-6 text-xs text-neutral-400 space-y-1">
-                  <p><span className="text-neutral-600">Endereço:</span> {address.street}, {address.number} — {address.city}/{address.state}</p>
                   <p><span className="text-neutral-600">Pagamento:</span> {paymentMethod === 'pix' ? 'PIX' : 'Cartão'}</p>
                 </div>
                 <div className="flex gap-4">
