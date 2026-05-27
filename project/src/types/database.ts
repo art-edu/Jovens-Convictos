@@ -61,6 +61,22 @@ export interface Database {
         Args: { p_product_id: string; p_quantity: number };
         Returns: undefined;
       };
+      admin_list_users: {
+        Args: Record<string, never>;
+        Returns: Array<{
+          id: string;
+          email: string;
+          full_name: string;
+          phone: string;
+          role: string;
+          created_at: string;
+          updated_at: string;
+        }>;
+      };
+      admin_update_user_role: {
+        Args: { target_user_id: string; new_role: string };
+        Returns: Record<string, unknown>;
+      };
     };
   };
 }

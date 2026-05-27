@@ -60,7 +60,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!data && !error) {
       const { data: newProfile, error: insertError } = await supabase
         .from('profiles')
-        .insert({ id: userId, full_name: 'Usuário', role: 'admin' })
+        .insert({ id: userId, full_name: 'Usuário' })
         .select()
         .maybeSingle();
 

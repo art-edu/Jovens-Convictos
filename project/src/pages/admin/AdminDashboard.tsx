@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Package, ShoppingBag, Users, TrendingUp, Plus } from 'lucide-react';
+import { Package, ShoppingBag, Users, TrendingUp, Plus, UserCog } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -95,6 +95,14 @@ export default function AdminDashboard() {
             <ShoppingBag size={24} className="text-blue-400 mb-4" />
             <h3 className="text-white text-sm tracking-[0.1em] uppercase mb-2">Gerenciar Pedidos</h3>
             <p className="text-neutral-500 text-xs leading-relaxed">Visualizar e atualizar o status dos pedidos.</p>
+          </Link>
+          <Link
+            to="/admin/usuarios"
+            className="group border border-neutral-800 bg-neutral-950 p-8 hover:border-amber-400/40 transition-colors"
+          >
+            <UserCog size={24} className="text-amber-400 mb-4" />
+            <h3 className="text-white text-sm tracking-[0.1em] uppercase mb-2">Gerenciar Usuários</h3>
+            <p className="text-neutral-500 text-xs leading-relaxed">Gerenciar permissões de administradores.</p>
           </Link>
         </div>
       </div>

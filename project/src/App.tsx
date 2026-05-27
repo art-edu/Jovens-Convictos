@@ -17,6 +17,7 @@ import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminProducts from './pages/admin/AdminProducts';
 import AdminProductForm from './pages/admin/AdminProductForm';
 import AdminOrders from './pages/admin/AdminOrders';
+import AdminUsers from './pages/admin/AdminUsers';
 import NotFound from './pages/NotFound';
 
 export default function App() {
@@ -42,6 +43,7 @@ export default function App() {
                 <Route path="/admin/produtos/novo" element={<AdminRoute><AdminProductForm /></AdminRoute>} />
                 <Route path="/admin/produtos/editar/:id" element={<AdminRoute><AdminProductForm /></AdminRoute>} />
                 <Route path="/admin/pedidos" element={<AdminRoute><AdminOrders /></AdminRoute>} />
+                <Route path="/admin/usuarios" element={<AdminRoute><AdminUsers /></AdminRoute>} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </div>
